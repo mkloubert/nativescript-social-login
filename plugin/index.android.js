@@ -14,3 +14,143 @@ var androidApp = app.android;
 var androidAppCtx = androidApp.context;
 
 
+var activity;
+var googleClient;
+var loggers = [];
+var loginCallback;
+var rcGoogleSignIn;
+
+
+// addLogger
+function addLogger(l) {
+    loggers.push(l);
+};
+exports.addLogger = addLogger;
+
+function logMsg(msg) {
+    for (var i = 0; i < loggers.length; i++) {
+        try {
+            var l = loggers[i];
+            if (l) {
+                l(msg);
+            }
+        }
+        catch (e) {
+            // ignore
+        }
+    }
+};
+
+// init
+function init(cfg) {
+    if (!cfg) {
+        cfg = {};
+    }
+    
+    activity = androidApp.foregroundActivity || androidApp.startActivity;
+    if (!activity) {
+        return;
+    }
+    
+    var options = new com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestEmail()
+        .requestProfile()
+        // .requestServerAuthCode('@TODO', false)
+        .build();
+        
+    googleClient = new com.google.android.gms.common.api.GoogleApiClient.Builder(androidAppCtx)
+        .addApi(com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API, options)
+        .build();
+        
+    rcGoogleSignIn = 597965301;
+        
+    activity.onActivityResult = function(requestCode, resultCode, data) {
+        var resultCtx = {};
+        var cb = loginCallback;
+        
+        try {
+            logMsg('onActivityResult >> requestcode: ' + requestCode);
+            logMsg('onActivityResult >> resultcode: ' + resultCode);
+            
+            if (requestCode == rcGoogleSignIn) {
+                logMsg('onActivityResult >> google');
+                
+                resultCtx.provider = 'google';
+                
+                if (resultCode == android.app.Activity.RESULT_OK) {
+                    logMsg('onActivityResult >> google >> ok');
+                    
+                    var signInResult = com.google.android.gms.auth.api.Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                    if (signInResult.isSuccess()) {
+                        logMsg('onActivityResult >> google >> success');
+                        
+                        resultCtx.code = 0;
+                        
+                        var account = signInResult.getSignInAccount();
+                        
+                        var photoUrl = account.getPhotoUrl();
+                        if (photoUrl) {
+                            resultCtx.photo = photoUrl;
+                        }
+                        
+                        resultCtx.userToken = account.getEmail();
+                        resultCtx.displayName = account.getDisplayName();
+                        
+                        logMsg('onActivityResult >> google >> userToken: ' + resultCtx.userToken);
+                        logMsg('onActivityResult >> google >> displayName: ' + resultCtx.displayName);
+                        logMsg('onActivityResult >> google >> photo: ' + resultCtx.photo);
+                    }
+                    else {
+                        logMsg('onActivityResult >> google >> NO success');
+                        
+                        resultCtx.code = -2;
+                    }
+                }
+                else if (resultCode == android.app.Activity.RESULT_CANCELED) {
+                    logMsg('onActivityResult >> google >> cancelled');
+                    
+                    resultCtx.code = 1;
+                }
+            }
+            else {
+                if (cfg.onActivityResult) {
+                    cfg.onActivityResult(requestCode, resultCode, data);
+                }
+                
+                cb = null;
+            }
+        }
+        catch (e) {
+            resultCtx.code = -1;
+            resultCtx.message = e;
+        }
+        
+        logMsg('onActivityResult >> result: ' + JSON.stringify(resultCtx));
+        
+        if (cb) {
+            cb(resultCtx);
+        }
+    };
+};
+exports.init = init;
+
+function login(provider, callback) {
+    switch (provider) {
+        case 'google':
+            loginWithGoogle(callback);
+            break;
+    }
+};
+exports.login = login;
+
+function loginWithGoogle(callback) {
+    loginCallback = callback;
+    
+    logMsg('loginWithGoogle >> starting activity...');
+    
+    var signInIntent = com.google.android.gms.auth.api.Auth.GoogleSignInApi.getSignInIntent(googleClient);
+    activity.startActivityForResult(signInIntent, rcGoogleSignIn);
+    
+    logMsg('loginWithGoogle >> activity started');
+};
+exports.loginWithGoogle = loginWithGoogle;
