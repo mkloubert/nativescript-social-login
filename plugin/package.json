@@ -1,0 +1,35 @@
+{
+  "name": "nativescript-social-login",
+  "description": "NativeScript plugin for social (token based) log-ins.",
+  "version": "0.0.1",
+  "nativescript": {
+    "platforms": {
+      "android": "1.1.0"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mkloubert/nativescript-social-login"
+  },
+  "keywords": [
+    "NativeScript",
+    "Google",
+    "Social",
+    "Login",
+    "Access",
+    "Token"
+  ],
+  "author": {
+    "name": "Marcel Joachim Kloubert",
+    "email": "marcel.kloubert@gmx.net"
+  },
+  "license": {
+    "type": "MIT",
+    "url": "https://github.com/mkloubert/nativescript-social-login/blob/master/LICENSE"
+  },
+  "bugs": {
+    "url": "https://github.com/mkloubert/nativescript-social-login/issues"
+  },
+  "homepage": "https://github.com/mkloubert/nativescript-social-login",
+  "readmeFilename": "README.md"
+}

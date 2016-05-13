@@ -1,0 +1,17 @@
+
+android {
+  productFlavors {
+    "nativescript-social-login" {
+      dimension "nativescript-social-login"
+    }
+  }
+}
+
+
+dependencies {
+    // Facebook SDK
+    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
+
+    // Google Play services (auth)
+    compile 'com.google.android.gms:play-services-auth:8.4.0'
+}
