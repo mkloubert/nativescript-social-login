@@ -15,13 +15,17 @@ var androidAppCtx = androidApp.context;
 
 
 var activity;
+var fbCallbackManager;
+var fbLoginManager;
+var fbInitialized;
 var googleClient;
 var loggers = [];
 var loginCallback;
+var rcFacebookSignIn;
 var rcGoogleSignIn;
 
 
-// addLogger
+// addLogger()
 function addLogger(l) {
     loggers.push(l);
 };
@@ -41,7 +45,7 @@ function logMsg(msg) {
     }
 };
 
-// init
+// init()
 function init(cfg) {
     if (!cfg) {
         cfg = {};
@@ -50,6 +54,58 @@ function init(cfg) {
     activity = androidApp.foregroundActivity || androidApp.startActivity;
     if (!activity) {
         return;
+    }
+    
+    try {
+        com.facebook.FacebookSdk.sdkInitialize(androidAppCtx.getApplicationContext());
+        
+        fbCallbackManager = com.facebook.CallbackManager.Factory.create();
+        
+        fbLoginManager = com.facebook.login.LoginManager.getInstance();
+        fbLoginManager.logOut();
+        
+        if (cfg.facebook) {
+            if (cfg.facebook.logInBehavior) {
+                fbLoginManager = fbLoginManager.setLoginBehavior(cfg.facebook.logInBehavior);
+            }
+        }
+        
+        fbInitialized = fbCallbackManager &&
+                        fbLoginManager;
+                        
+        if (fbInitialized) {
+            var invokeLoginCallbackForFacebook = function(resultCtx) {
+                var cb = loginCallback;
+                if (!cb) {
+                    return;
+                }
+                
+                resultCtx.provider = 'facebook';
+            };
+            
+            fbLoginManager.registerCallback(fbCallbackManager, new com.facebook.FacebookCallback({
+                onSuccess: function (result) {
+                    invokeLoginCallbackForFacebook({
+                        code: 0    
+                    });
+                },
+                
+                onCancel: function () {
+                    invokeLoginCallbackForFacebook({
+                        code: 1
+                    });
+                },
+                
+                onError: function (e) {
+                    invokeLoginCallbackForFacebook({
+                        code: -2
+                    });
+                }
+            }));
+        }
+    }
+    catch (e) {
+        console.log("Facebook SDK could not be initialized! " + e);
     }
     
     var options = new com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -63,6 +119,8 @@ function init(cfg) {
         .build();
         
     rcGoogleSignIn = 597965301;
+    
+    rcFacebookSignIn = 597965302;
         
     activity.onActivityResult = function(requestCode, resultCode, data) {
         var resultCtx = {};
@@ -112,6 +170,11 @@ function init(cfg) {
                     resultCtx.code = 1;
                 }
             }
+            else if (requestCode == rcFacebookSignIn) {
+                if (fbInitialized) {
+                    fbCallbackManager.onActivityResult(requestCode, resultCode, data);
+                }
+            }
             else {
                 if (cfg.onActivityResult) {
                     cfg.onActivityResult(requestCode, resultCode, data);
@@ -134,15 +197,38 @@ function init(cfg) {
 };
 exports.init = init;
 
+// login()
 function login(provider, callback) {
     switch (provider) {
         case 'google':
             loginWithGoogle(callback);
             break;
+            
+        case 'facebook':
+            loginWithFacebook(callback);
+            break;
+            
+        case 'twitter':
+            loginWithTwitter(callback);
+            break;
     }
 };
 exports.login = login;
 
+// [CURRENTLY NOT WORKING!!!]  loginWithFacebook()
+function loginWithFacebook(callback) {
+    loginCallback = callback;
+    
+    logMsg('loginWithFacebook >> starting activity...');
+    
+    fbLoginManager.logInWithReadPermissions(activity,
+                                            java.util.Arrays.asList(["email"]));
+                                          
+    logMsg('loginWithGoogle >> activity started');                                      
+};
+exports.loginWithFacebook = loginWithFacebook;
+
+// loginWithGoogle()
 function loginWithGoogle(callback) {
     loginCallback = callback;
     
@@ -154,3 +240,35 @@ function loginWithGoogle(callback) {
     logMsg('loginWithGoogle >> activity started');
 };
 exports.loginWithGoogle = loginWithGoogle;
+
+// [CURRENTLY NOT WORKING!!!]  loginWithTwitter()
+function loginWithTwitter = function(callback) {
+    loginCallback = callback;
+    
+    logMsg('loginWithTwitter >> starting activity...');
+    
+    var invokeLoginCallbackForTwitter = function(resultCtx) {
+        if (!callback) {
+            return;
+        }
+        
+        resultCtx.provider = 'twitter';
+    };
+    
+    com.twitter.sdk.android.Twitter.login(activity, {
+        success: function(result) {
+            invokeLoginCallbackForTwitter({
+                code: 0    
+            });
+        },
+        
+        failure: function(exception) {
+            invokeLoginCallbackForTwitter({
+                code: -2
+            });
+        }
+    });
+    
+    logMsg('loginWithTwitter >> activity started');
+};
+exports.loginWithTwitter = loginWithTwitter;

@@ -40,6 +40,16 @@ function createViewModel() {
             }
         });
     };
+    
+    viewModel.loginWithFacebook = function() {
+         SocialLogin.loginWithFacebook(function(loginRes) {
+         });
+    };
+    
+    viewModel.loginWithTwitter = function() {
+        SocialLogin.loginWithTwitter(function(loginRes) {
+        });
+    };
 
     return viewModel;
 }
