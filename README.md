@@ -121,7 +121,7 @@ SocialLogin.login('google', function(result) {
 
 ### Logging
 
-If you want to get the logging output of the module, you can use `PayPal.addLogger` function to add a callback that receives a message from the module:
+If you want to get the logging output of the module, you can use `SocialLogin.addLogger` function to add a callback that receives a message from the module:
 
 ```javascript
 SocialLogin.addLogger(function(msg) {
