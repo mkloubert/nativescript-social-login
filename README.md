@@ -143,6 +143,18 @@ interface ILoginConfiguration {
      * Fallback action for the result of the underlying activity.
      */
     onActivityResult?: (requestCode: number, resultCode: number, data: any) => void;
+
+    twitter?: {
+        /**
+         * The consumer key.
+         */
+        key: string,
+
+        /**
+         * The consumer secret.
+         */
+        secrect: string,
+    }
 }
 ```
 
