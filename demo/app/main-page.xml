@@ -1,17 +1,7 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo">
-  <Page.actionBar>
-    <ActionBar title="nativescript-social-login Demo">
-    </ActionBar>
-  </Page.actionBar>
-
   <StackLayout>
-    <Button text="Google"
-            tap="{{ loginWithGoogle }}" />
-            
-    <Button text="Facebook"
-            tap="{{ loginWithFacebook }}" />
-            
-    <Button text="Twitter"
-            tap="{{ loginWithTwitter }}" />
+    <Label text="Tap the button" class="title"/>
+    <Button text="TAP" tap="{{ onTap }}" />
+    <Label text="{{ message }}" class="message" textWrap="true"/>
   </StackLayout>
 </Page>
