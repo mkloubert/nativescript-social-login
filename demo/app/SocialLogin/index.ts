@@ -74,7 +74,7 @@ export interface ILoginConfiguration {
     }
 
     /**
-     * The server client ID for req
+     * The server client ID for requesting server auth token.
      */
     googleServerClientId?: string;
 
@@ -82,6 +82,21 @@ export interface ILoginConfiguration {
      * Fallback action for the result of the underlying activity.
      */
     onActivityResult?: (requestCode: number, resultCode: number, data: any) => void;
+
+    /**
+     * Twitter specific configuration.
+     */
+    twitter?: {
+        /**
+         * The consumer key.
+         */
+        key: string,
+
+        /**
+         * The consumer secret.
+         */
+        secret: string,
+    }
 }
 
 /**
@@ -104,7 +119,7 @@ export interface ILoginResult {
     displayName?: string;
     
     /**
-     * Gets the error (if defined.)
+     * Gets the error (if defined).
      */
     error?: any;
 

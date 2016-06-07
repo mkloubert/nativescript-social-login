@@ -30,6 +30,8 @@ var _googleServerClientId;
 var _loginCallback;
 var _rcFacebookSignIn;
 var _rcGoogleSignIn;
+var _twitterKey;
+var _twitterSecret;
 
 var actionRunnable = java.lang.Runnable.extend({
     action: undefined,
@@ -58,10 +60,15 @@ function initEnvironment(cfg) {
         }
     }
 
+    var initializeTwitter = false;
+    if (!TypeUtils.isNullOrUndefined(cfg.twitter)) {
+        _twitterKey = cfg.twitter.key;
+        _twitterSecret = cfg.twitter.secret;
+    }
+
     if (TypeUtils.isNullOrUndefined(initializeGoogle)) {
         initializeGoogle = true;
     }
-    
     if (TypeUtils.isNullOrUndefined(initializeFacebook)) {
         initializeFacebook = true;
     }
@@ -74,7 +81,7 @@ function initEnvironment(cfg) {
             isInitialized: null,
         },
         twitter: {
-            isInitialized: undefined,
+            isInitialized: null,
         }
     };
 
@@ -90,7 +97,6 @@ function initEnvironment(cfg) {
     if (!TypeUtils.isNullOrUndefined(cfg.googleServerClientId)) {
         _googleServerClientId = cfg.googleServerClientId;
     }
-
 
     // Google
     if (initializeGoogle) {
@@ -199,6 +205,26 @@ function initEnvironment(cfg) {
         }
         catch (e) {
             result.facebook.error = e;
+        }
+    }
+
+    if (!TypeUtils.isNullOrUndefined(_twitterKey) &&
+        !TypeUtils.isNullOrUndefined(_twitterSecret)) {
+        
+        result.twitter.isInitialized = false;
+        try {
+	        var twitterAuthCfg = new com.twitter.sdk.android.core.TwitterAuthConfig(
+                _twitterKey,
+                _twitterSecret);
+        
+            io.fabric.sdk.android.Fabric.with(
+                _activity,
+                new com.twitter.sdk.android.core.TwitterCore(twitterAuthCfg));
+
+            result.twitter.isInitialized = true;
+        }
+        catch (e) {
+            result.twitter.error = e;
         }
     }
 
@@ -312,7 +338,54 @@ function loginWithGoogle(callback) {
 }
 
 function loginWithTwitter(callback) {
-    throw "Twitter is currently NOT supported!";
+    _loginCallback = callback;
+    
+    try {
+        var invokeForTwitterResult = function(resultCtx) {
+            resultCtx.provider = 'twitter';
+
+            var cb = _loginCallback;
+            if (cb) {
+                cb(resultCtx);
+            }
+        };
+
+        var uiAction = new actionRunnable();
+        uiAction.action = () => {
+            var twitterAuthCfg = new com.twitter.sdk.android.core.TwitterAuthConfig(
+                _twitterKey,
+                _twitterSecret);
+
+            var t = com.twitter.sdk.android.Twitter(twitterAuthCfg);
+            t.logIn(_activity, new com.twitter.sdk.android.core.Callback({
+                success: function(result) {
+                    invokeForTwitterResult({
+                        code: 0,
+                        authToken: result.data.getAuthToken().token,
+                        userToken: result.data.getUserName(),
+                        displayName: result.data.getUserName()
+                    });
+                },
+
+                failure: function(ex) {
+                    invokeForTwitterResult({
+                        code: -2,
+                        error: ex.getMessage()
+                    });
+                }
+            }));
+
+            // invokeForTwitterResult({});
+        };
+
+        _activity.runOnUiThread(uiAction);
+    }
+    catch (e) {
+        callback({
+            code: -1,
+            error: e
+        });
+    }
 }
 
 
