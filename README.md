@@ -144,6 +144,9 @@ interface ILoginConfiguration {
      */
     onActivityResult?: (requestCode: number, resultCode: number, data: any) => void;
 
+    /**
+     * Twitter specific configuration.
+     */
     twitter?: {
         /**
          * The consumer key.
