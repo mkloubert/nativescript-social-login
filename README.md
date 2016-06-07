@@ -80,6 +80,35 @@ inside your app project to install the module.
 </resources>
 ```
 
+#### app.gradle
+
+```gradle
+buildscript {
+    repositories {
+        jcenter()
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.google.gms:google-services:3.0.0'
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+dependencies {
+    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
+    compile 'com.google.android.gms:play-services-auth:8.4.0'
+
+    compile('com.twitter.sdk.android:twitter:1.13.2@aar') {
+        transitive = true
+    }
+}
+```
+
 ## Usage
 
 ### Include
