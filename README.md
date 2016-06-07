@@ -105,7 +105,7 @@ if (Application.android) {
 }
 ```
 
-The `init()` method of `SocialLogin` receives an optional object with the following structure:
+The `init()` function receives an (optional) object with the following structure:
 
 ```typescript
 interface ILoginConfiguration {
@@ -168,3 +168,53 @@ interface IInitializationResult {
 The `isInitialized` can be `(true)` for succeeded, `(false)` for failed, `(undefined)` for "not supported" and `(null)` for providers that have been skipped.
 
 The `error` properties are only defined if an exception was thrown while initialization.
+
+### Login
+
+If you want to use a login method you have to submit a callback that receives an object with the following structure:
+
+```typescript
+interface ILoginResult {
+    /**
+     * Gets the auth token (if requested)
+     */
+    authToken?: string;
+
+    /**
+     * Gets the result code
+     */
+    code: number;
+
+    /**
+     * The display name
+     */
+    displayName?: string;
+    
+    /**
+     * Gets the error (if defined)
+     */
+    error?: any;
+
+    /**
+     * The photo URL.
+     */
+    photo?: string;
+
+    /**
+     * Gets the underlying provider.
+     */
+    provider?: string;
+
+    /**
+     * The user token, like email address.
+     */
+    userToken?: string;
+}
+```
+
+The following functions are implemented:
+
+| Provider | Provider |
+| ---- | ---- |
+| loginWithFacebook | Facebook |
+| loginWithGoogle | Google |
