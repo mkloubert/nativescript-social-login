@@ -5,19 +5,17 @@
 
 [NativeScript](https://www.nativescript.org/) module for social (token based) log-ins..
 
+## Implementations
+
+| Provider | Android | iOS |
+| ---- | ---- | ---- |
+| Google | Yes | No |
+| Facebook | Yes | No |
+| Twitter | No | No |
+
 ## License
 
 [MIT license](https://raw.githubusercontent.com/mkloubert/nativescript-social-login/master/LICENSE)
-
-## Platforms
-
-* Android
-
-## Roadmap
-
-* add support for iOS
-* add support for Twitter
-* add support for Facebook
 
 ## Installation
 
@@ -33,38 +31,83 @@ inside your app project to install the module.
 
 #### AndroidManifest.xml
 
-Keep sure to define the following permissions, activities and other data in your manifest file:
+##### Permissions
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <!-- ... -->
     
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- ... -->
 </manifest>
 ```
 
-### app.gradle
+##### Acitivities
 
-Keep sure to have references to the following libraries in your `app/App_Resources/Android/app.gradle` file of your project.
-
-```gradle
-dependencies {
-    // Facebook SDK
-    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
-
-    // Google Play services (auth)
-    compile 'com.google.android.gms:play-services-auth:8.4.0'
-}
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- ... -->
+    
+    <application>
+        <!-- ... -->
+        
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id" />
+        
+        <activity android:name="com.facebook.FacebookActivity"
+                  android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  android:label="@string/app_name" />
+        
+        <!-- ... -->
+    </application>
+    
+    <!-- ... -->
+</manifest>
 ```
 
-## Demo
+##### Strings
 
-For quick start have a look at the [demo/app/main-view-model.js](https://github.com/mkloubert/nativescript-social-login/blob/master/demo/app/main-view-model.js) file of the [demo app](https://github.com/mkloubert/nativescript-social-login/tree/master/demo) to learn how it works.
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="facebook_app_id">YOUR_FACEBOOK_APP_ID</string>
+</resources>
+```
 
-Otherwise...
+#### app.gradle
+
+```gradle
+buildscript {
+    repositories {
+        jcenter()
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.google.gms:google-services:3.0.0'
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+dependencies {
+    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
+    compile 'com.google.android.gms:play-services-auth:8.4.0'
+
+    compile('com.twitter.sdk.android:twitter:1.13.2@aar') {
+        transitive = true
+    }
+}
+```
 
 ## Usage
 
@@ -72,59 +115,166 @@ Otherwise...
 
 Include the module in your code-behind:
 
-```javascript
-var SocialLogin = require("nativescript-social-login");
+```typescript
+import SocialLogin = require("nativescript-social-login");
 ```
 
 ### Initialize
 
-Initialize the environment:
+```typescript
+import Application = require("application");
+import SocialLogin = require("nativescript-social-login");
 
-```javascript
-function onPageLoaded(args) {
-    SocialLogin.init();
+if (Application.android) {
+    Application.android.onActivityCreated = (activity) => {
+        var result = SocialLogin.init({
+            activity: activity,
+            googleServerClientId: "<YOUR-CLIENT-ID-HERE>"
+        });
+    });
 }
-exports.onPageLoaded = onPageLoaded;
 ```
+
+The `init()` function receives an (optional) object with the following structure:
+
+```typescript
+interface ILoginConfiguration {
+    /**
+     * The underlying custom activity to use.
+     */
+    activity?: any;
+
+    /**
+     * Facebook specific configuration.
+     */
+    facebook?: {
+        /**
+         * Initialize Facebook or not. Default: (true)
+         */
+        initialize?: boolean,
+    }
+
+    /**
+     * Google specific configuration.
+     */
+    google?: {
+        /**
+         * Initialize Google or not. Default: (true)
+         */
+        initialize?: boolean,
+    }
+
+    /**
+     * The server client ID for requesting server auth token.
+     */
+    googleServerClientId?: string;
+
+    /**
+     * Fallback action for the result of the underlying activity.
+     */
+    onActivityResult?: (requestCode: number, resultCode: number, data: any) => void;
+
+    /**
+     * Twitter specific configuration.
+     */
+    twitter?: {
+        /**
+         * The consumer key.
+         */
+        key: string,
+
+        /**
+         * The consumer secret.
+         */
+        secrect: string,
+    }
+}
+```
+
+The `result` object that is returned by  `init()` has the following structure:
+
+```typescript
+interface IInitializationResult {
+    facebook: {
+        error: any,
+        isInitialized: boolean,
+    },
+    google: {
+        error: any,
+        isInitialized: boolean,
+    },
+    twitter: {
+        error: any,
+        isInitialized: boolean,
+    }
+}
+```
+
+The `isInitialized` can be `(true)` for succeeded, `(false)` for failed, `(undefined)` for "not supported" and `(null)` for providers that have been skipped.
+
+The `error` properties are only defined if an exception was thrown while initialization.
 
 ### Login
 
-```javascript
-// use Google sign in
-SocialLogin.login('google', function(result) {
-    switch (result.code) {
-        case 0:
-            // success
-            // 
-            // result.userToken
-            // result.displayName
-            // result.photo (if defined)
-            // result.provider (should be "google" in that case)
-            break;
-        
-        case -1:
-            // "unhandled" exception
-            // 
-            // result.message
-            break;
-            
-        case -2:
-            // NO success
-            break;
-            
-        case 1:
-            // cancelled
-            break;
-    }
-});
+If you want to use a login functions you have to submit a callback that receives an object with the following structure:
+
+```typescript
+interface ILoginResult {
+    /**
+     * Gets the auth token (if requested)
+     */
+    authToken?: string;
+
+    /**
+     * Gets the result code
+     */
+    code: number;
+
+    /**
+     * The display name
+     */
+    displayName?: string;
+    
+    /**
+     * Gets the error (if defined)
+     */
+    error?: any;
+
+    /**
+     * The photo URL.
+     */
+    photo?: string;
+
+    /**
+     * Gets the underlying provider.
+     */
+    provider?: string;
+
+    /**
+     * The user token, like email address.
+     */
+    userToken?: string;
+}
 ```
 
-### Logging
+The following functions are implemented:
 
-If you want to get the logging output of the module, you can use `SocialLogin.addLogger` function to add a callback that receives a message from the module:
+| Provider | Provider |
+| ---- | ---- |
+| loginWithFacebook | Facebook |
+| loginWithGoogle | Google |
 
-```javascript
-SocialLogin.addLogger(function(msg) {
-    console.log('[nativescript-social-login]: ' + msg);
-});
+## Example
+
+```typescript
+SocialLogin.loginWithFacebook(
+    (result) => {
+        console.log("code: " + result.code);
+        console.log("error: " + result.error);
+        console.log("userToken: " + result.userToken);
+        console.log("displayName: " + result.displayName);
+        console.log("photo: " + result.photo);
+        console.log("authToken: " + result.authToken);
+    }
+);
 ```
