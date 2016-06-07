@@ -105,10 +105,51 @@ if (Application.android) {
 }
 ```
 
-The `result` object has the following structure:
+The `init()` method of `SocialLogin` receives an optional object with the following structure:
 
 ```typescript
-export interface IInitializationResult {
+interface ILoginConfiguration {
+    /**
+     * The underlying custom activity to use.
+     */
+    activity?: any;
+
+    /**
+     * Facebook specific configuration.
+     */
+    facebook?: {
+        /**
+         * Initialize Facebook or not. Default: (true)
+         */
+        initialize?: boolean,
+    }
+
+    /**
+     * Google specific configuration.
+     */
+    google?: {
+        /**
+         * Initialize Google or not. Default: (true)
+         */
+        initialize?: boolean,
+    }
+
+    /**
+     * The server client ID for requesting server auth token.
+     */
+    googleServerClientId?: string;
+
+    /**
+     * Fallback action for the result of the underlying activity.
+     */
+    onActivityResult?: (requestCode: number, resultCode: number, data: any) => void;
+}
+```
+
+The `result` object that is returned by  `init()` has the following structure:
+
+```typescript
+interface IInitializationResult {
     facebook: {
         error: any,
         isInitialized: boolean,
