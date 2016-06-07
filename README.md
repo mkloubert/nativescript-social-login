@@ -171,7 +171,7 @@ The `error` properties are only defined if an exception was thrown while initial
 
 ### Login
 
-If you want to use a login method you have to submit a callback that receives an object with the following structure:
+If you want to use a login functions you have to submit a callback that receives an object with the following structure:
 
 ```typescript
 interface ILoginResult {
@@ -218,3 +218,18 @@ The following functions are implemented:
 | ---- | ---- |
 | loginWithFacebook | Facebook |
 | loginWithGoogle | Google |
+
+## Example
+
+```typescript
+SocialLogin.loginWithFacebook(
+    (result) => {
+        console.log("code: " + result.code);
+        console.log("error: " + result.error);
+        console.log("userToken: " + result.userToken);
+        console.log("displayName: " + result.displayName);
+        console.log("photo: " + result.photo);
+        console.log("authToken: " + result.authToken);
+    }
+);
+```
