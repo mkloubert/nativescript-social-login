@@ -3,7 +3,7 @@
 
 # NativeScript Social Login
 
-[NativeScript](https://www.nativescript.org/) module for social (token based) log-ins..
+[NativeScript](https://www.nativescript.org/) module for social (token based) log-ins.
 
 ## Implementations
 
