@@ -48,8 +48,14 @@ function initEnvironment(cfg) {
 
     var initializeGoogle;
     if (!TypeUtils.isNullOrUndefined(cfg.google)) {
+        // google.initialize
         if (!TypeUtils.isNullOrUndefined(cfg.google.initialize)) {
             initializeGoogle = cfg.google.initialize;
+        }
+
+        // google.serverClientId
+        if (!TypeUtils.isNullOrUndefined(cfg.google.serverClientId)) {
+            _googleServerClientId = cfg.google.serverClientId;
         }
     }
 
@@ -94,8 +100,11 @@ function initEnvironment(cfg) {
                 Application.android.foregroundActivity ||
                 Application.android.startActivity;
 
-    if (!TypeUtils.isNullOrUndefined(cfg.googleServerClientId)) {
-        _googleServerClientId = cfg.googleServerClientId;
+    // DEPRECATED: googleServerClientId
+    if (TypeUtils.isNullOrUndefined(_googleServerClientId)) {
+        if (!TypeUtils.isNullOrUndefined(cfg.googleServerClientId)) {
+            _googleServerClientId = cfg.googleServerClientId;
+        }    
     }
 
     // Google

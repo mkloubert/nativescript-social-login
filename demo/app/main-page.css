@@ -1,0 +1,26 @@
+.mjk-setup Label.mjk-header {
+    margin-top: 16;
+    font-size: 32;
+}
+
+.mjk-setup Label.mjk-header-first {
+    margin-top: 0;
+}
+
+
+.mjk-setup Label {
+    margin: 0,8,0,8;
+}
+
+.mjk-setup Button {
+    margin-top: 24;
+}
+
+.mjk-buttons Image {
+    width: 300;
+    margin-top: 24;
+}
+
+.mjk-buttons .mjk-infoTable {
+    margin: 24,8,0,8;
+}

@@ -71,10 +71,17 @@ export interface ILoginConfiguration {
          * Initialize Google or not. Default: (true)
          */
         initialize?: boolean,
+       
+       /**
+        * The server client ID for requesting server auth token.
+        */
+        serverClientId?: string;
     }
 
     /**
      * The server client ID for requesting server auth token.
+     * 
+     * @deprecated Use google.serverClientId instead.
      */
     googleServerClientId?: string;
 
