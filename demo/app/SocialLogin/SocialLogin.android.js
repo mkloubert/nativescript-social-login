@@ -145,14 +145,28 @@ function initEnvironment(cfg) {
                                 var err;
                                 var usrToken;
                                 var displayName;
+                                var photo;
+                                var id;
 
                                 try {
+                                    // ID
+                                    if (obj.has("id")) {
+                                        id = obj.getString("id");
+                                    }
+                                    
+                                    // email
                                     if (obj.has("email")) {
                                         usrToken = obj.getString("email");
                                     }
 
+                                    // name
                                     if (obj.has("name")) {
                                         displayName = obj.getString("name");
+                                    }
+
+                                    // photo
+                                    if (obj.has("picture")) {
+                                        photo = obj.getJSONObject("picture").getJSONObject("data").getString("url");
                                     }
                                 }
                                 catch (e) {
@@ -165,7 +179,9 @@ function initEnvironment(cfg) {
                                     code: code,
                                     error: err,
                                     userToken: usrToken,
-                                    displayName: displayName
+                                    displayName: displayName,
+                                    photo: photo,
+                                    id: id
                                 });
                             }
                         })
@@ -173,7 +189,7 @@ function initEnvironment(cfg) {
 
                     try {
                         var params = new android.os.Bundle();
-                        params.putString("fields", "id,name,picture,email");
+                        params.putString("fields", "id,name,picture.type(large),email");
 
                         request.setParameters(params);
                         request.executeAsync();
@@ -247,6 +263,11 @@ function initEnvironment(cfg) {
                             resultCtx.code = 0;
 
                             var account = signInResult.getSignInAccount();
+
+                            var usrId = account.getId();
+                            if (!TypeUtils.isNullOrUndefined(usrId)) {
+                                resultCtx.id = usrId;
+                            }
 
                             var photoUrl = account.getPhotoUrl();
                             if (!TypeUtils.isNullOrUndefined(photoUrl)) {

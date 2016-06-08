@@ -124,6 +124,11 @@ export interface ILoginResult {
     error?: any;
 
     /**
+     * The ID of the user.
+     */
+    id?: string;
+
+    /**
      * The photo URL.
      */
     photo?: string;
