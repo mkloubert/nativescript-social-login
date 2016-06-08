@@ -18,7 +18,16 @@ buildscript {
     }
 }
 
+repositories {
+    mavenCentral()
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.6.0'
     compile 'com.google.android.gms:play-services-auth:8.4.0'
+
+    compile('com.twitter.sdk.android:twitter:1.13.2@aar') {
+        transitive = true
+    }
 }
