@@ -137,7 +137,16 @@ if (Application.android) {
     Application.android.onActivityCreated = (activity) => {
         var result = SocialLogin.init({
             activity: activity,
-            googleServerClientId: "<YOUR-CLIENT-ID-HERE>"
+            
+            // THIS IS OPTIONAL
+            //
+            // SET THIS ONLY IF YOU NEED AN AUTH TOKEN
+            // FOR AN EXTERNAL BACKEND APP!
+            // 
+            // s. https://developers.google.com/identity/sign-in/android/offline-access
+            google: {
+                serverClientId: "<YOUR-CLIENT-ID-HERE>"
+            }
         });
     });
 }
@@ -170,12 +179,12 @@ interface ILoginConfiguration {
          * Initialize Google or not. Default: (true)
          */
         initialize?: boolean,
+       
+       /**
+        * The server client ID for requesting server auth token.
+        */
+        serverClientId?: string;
     }
-
-    /**
-     * The server client ID for requesting server auth token.
-     */
-    googleServerClientId?: string;
 
     /**
      * Fallback action for the result of the underlying activity.
@@ -194,7 +203,7 @@ interface ILoginConfiguration {
         /**
          * The consumer secret.
          */
-        secrect: string,
+        secret: string,
     }
 }
 ```
