@@ -226,6 +226,11 @@ interface ILoginResult {
     authToken?: string;
 
     /**
+     * Offline auth code used by servers to request new auth tokens.
+     */
+    authCode?: string;
+
+    /**
      * Gets the result code.
      */
     code: number;
