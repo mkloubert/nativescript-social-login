@@ -19,6 +19,12 @@
 
 [MIT license](https://raw.githubusercontent.com/mkloubert/nativescript-social-login/master/LICENSE)
 
+## Documentation
+
+The full documentation can be found on [readme.io](https://nativescript-sociallogin.readme.io/).
+
+Otherwise...
+
 ## Installation
 
 Run
