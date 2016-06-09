@@ -5,6 +5,8 @@
 
 [NativeScript](https://www.nativescript.org/) module for social (token based) log-ins.
 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WBLVWQKHLH3JG)
+
 ## Implementations
 
 | Provider | Android | iOS |
@@ -285,6 +287,6 @@ If you want to get the logging output of the module, you can use `SocialLogin.ad
 
 ```typescript
 SocialLogin.addLogger(function(msg: any, tag: string) {
-    console.log('[nativescript-social-login]: (' + tag + ') + ' + msg);
+    console.log('[nativescript-social-login]: (' + tag + '): ' + msg);
 });
 ```
