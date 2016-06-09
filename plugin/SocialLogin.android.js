@@ -39,7 +39,7 @@ var _rcFacebookSignIn;
 var _rcGoogleSignIn;
 var _twitterKey;
 var _twitterSecret;
-var _isGoogleRequestAuthCode;
+var _isGoogleRequestAuthCode = true;
 
 var actionRunnable = java.lang.Runnable.extend({
     action: undefined,
@@ -98,7 +98,10 @@ function initEnvironment(cfg,
             _googleServerClientId = cfg.google.serverClientId;
         }
 
-        _isGoogleRequestAuthCode = cfg.google.isRequestAuthCode;
+        // google.isRequestAuthCode
+        if (!TypeUtils.isNullOrUndefined(cfg.google.isRequestAuthCode)) {
+            _isGoogleRequestAuthCode = cfg.google.isRequestAuthCode;
+        }
     }
 
     var initializeFacebook;

@@ -136,17 +136,7 @@ import SocialLogin = require("nativescript-social-login");
 if (Application.android) {
     Application.android.onActivityCreated = (activity) => {
         var result = SocialLogin.init({
-            activity: activity,
-            
-            // THIS IS OPTIONAL
-            //
-            // SET THIS ONLY IF YOU NEED AN AUTH TOKEN
-            // FOR AN EXTERNAL BACKEND APP, E.G.!
-            // 
-            // s. https://developers.google.com/identity/sign-in/android/offline-access
-            google: {
-                serverClientId: "<YOUR-CLIENT-ID-HERE>"
-            }
+            activity: activity
         });
     });
 }
@@ -182,10 +172,16 @@ interface ILoginConfiguration {
        
        /**
         * The server client ID for requesting server auth token.
-        * 
-        * The should only be set if an auth token is required in a backend app, e.g.!
         */
         serverClientId?: string;
+        
+        /**
+         * If true (default), it will request for offline auth code which server can use for fetching or refreshing auth tokens.
+         * It will be set in authCode property of result object.
+         * 
+         * If false, it will request for token id. it will be set in authToken property of result object.
+         */
+        isRequestAuthCode?: boolean;
     }
 
     /**
