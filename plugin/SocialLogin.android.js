@@ -39,6 +39,7 @@ var _rcFacebookSignIn;
 var _rcGoogleSignIn;
 var _twitterKey;
 var _twitterSecret;
+var _isGoogleRequestAuthCode;
 
 var actionRunnable = java.lang.Runnable.extend({
     action: undefined,
@@ -96,6 +97,8 @@ function initEnvironment(cfg,
         if (!TypeUtils.isNullOrUndefined(cfg.google.serverClientId)) {
             _googleServerClientId = cfg.google.serverClientId;
         }
+
+        _isGoogleRequestAuthCode = cfg.google.isRequestAuthCode;
     }
 
     var initializeFacebook;
@@ -355,11 +358,8 @@ function initEnvironment(cfg,
                                 resultCtx.photo = photoUrl;
                             }
 
-                            var authToken = account.getServerAuthCode();
-                            if (!TypeUtils.isNullOrUndefined(authToken)) {
-                                resultCtx.authToken = authToken;
-                            }
-
+                            resultCtx.authToken = account.getIdToken(); 
+                            resultCtx.authCode = account.getServerAuthCode();
                             resultCtx.userToken = account.getEmail();
                             resultCtx.displayName = account.getDisplayName();      
                         }
@@ -447,7 +447,11 @@ function loginWithGoogle(callback) {
         if (!TypeUtils.isNullOrUndefined(_googleServerClientId)) {
             logMsg('Will request server auth code', LOGTAG_LOGIN_WITH_GOOGLE);
 
-            optionBuilder = optionBuilder.requestServerAuthCode(_googleServerClientId, false);
+            if(_isGoogleRequestAuthCode){
+                optionBuilder = optionBuilder.requestServerAuthCode(_googleServerClientId, false);
+            }else{
+                optionBuilder = optionBuilder.requestIdToken(_googleServerClientId);
+            }
         }
 
         var options = optionBuilder.build();

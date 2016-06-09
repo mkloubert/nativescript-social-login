@@ -76,6 +76,12 @@ export interface ILoginConfiguration {
         * The server client ID for requesting server auth token.
         */
         serverClientId?: string;
+
+        /**
+         * If true, it will request for offline auth code which server can use for fetching or refreshing auth tokens. It will be set in authCode property of result object.
+         * If false, it will request for token id. it will be set in authToken property of result object.
+         */
+        isRequestAuthCode: boolean;
     }
 
     /**
@@ -114,6 +120,11 @@ export interface ILoginResult {
      * Gets the auth token (if requested).
      */
     authToken?: string;
+
+    /**
+     * Offline auth code used by servers to request new auth tokens.
+     */
+    authCode?: string;
 
     /**
      * Gets the result code.
