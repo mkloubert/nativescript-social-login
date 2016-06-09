@@ -141,7 +141,7 @@ if (Application.android) {
             // THIS IS OPTIONAL
             //
             // SET THIS ONLY IF YOU NEED AN AUTH TOKEN
-            // FOR AN EXTERNAL BACKEND APP!
+            // FOR AN EXTERNAL BACKEND APP, E.G.!
             // 
             // s. https://developers.google.com/identity/sign-in/android/offline-access
             google: {
