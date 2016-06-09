@@ -182,6 +182,8 @@ interface ILoginConfiguration {
        
        /**
         * The server client ID for requesting server auth token.
+        * 
+        * The should only be set if an auth token is required in a backend app, e.g.!
         */
         serverClientId?: string;
     }
@@ -190,21 +192,6 @@ interface ILoginConfiguration {
      * Fallback action for the result of the underlying activity.
      */
     onActivityResult?: (requestCode: number, resultCode: number, data: any) => void;
-
-    /**
-     * Twitter specific configuration.
-     */
-    twitter?: {
-        /**
-         * The consumer key.
-         */
-        key: string,
-
-        /**
-         * The consumer secret.
-         */
-        secret: string,
-    }
 }
 ```
 
@@ -238,24 +225,29 @@ If you want to use a login functions you have to submit a callback that receives
 ```typescript
 interface ILoginResult {
     /**
-     * Gets the auth token (if requested)
+     * Gets the auth token (if requested).
      */
     authToken?: string;
 
     /**
-     * Gets the result code
+     * Gets the result code.
      */
     code: number;
 
     /**
-     * The display name
+     * The display name.
      */
     displayName?: string;
     
     /**
-     * Gets the error (if defined)
+     * Gets the error (if defined).
      */
     error?: any;
+
+    /**
+     * The ID of the user.
+     */
+    id?: string;
 
     /**
      * The photo URL.
