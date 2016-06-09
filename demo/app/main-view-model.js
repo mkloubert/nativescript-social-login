@@ -5,6 +5,10 @@ var Observable = require("data/observable").Observable;
 var SocialLogin = require("nativescript-social-login");
 var TypeUtils = require("utils/types");
 
+SocialLogin.addLogger(function(msg, tag) {
+    console.log("[nativescript-social-login] " + tag + " >> " + msg);
+});
+
 function createViewModel() {
     var viewModel = new Observable();
 

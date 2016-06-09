@@ -20,7 +20,32 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-function initEnvironment(cfg) {
+var _getLoggers;
+
+function logMsg(msg, tag) {
+    try {
+        var loggers = _getLoggers();
+
+        for (var i = 0; i < loggers.length; i++) {
+            try {
+                var l = loggers[i];
+                l(msg, tag);
+            }
+            catch (e) {
+                console.log("[ERROR] nativescript-social-login >> logMsg() >> logger[" + i + "]: " + e);
+            }
+        }
+    }
+    catch (e) {
+        console.log("[ERROR] nativescript-social-login >> logMsg(): " + e);
+    }
+}
+
+function initEnvironment(cfg,
+                         getLoggers) {
+
+    _getLoggers = getLoggers;
+
     return {
         facebook: {
             isInitialized: undefined,
@@ -36,6 +61,8 @@ function initEnvironment(cfg) {
 exports.initEnvironment = initEnvironment;
 
 function loginWithProvider(provider, callback) {
+    logMsg('NOT IMPLEMENTED!', 'loginWithProvider()');
+
     throw provider + " is currently NOT supported!";
 }
 exports.loginWithProvider = loginWithProvider;

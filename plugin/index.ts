@@ -181,7 +181,7 @@ export enum LoginResultType {
  * 
  * @param {Function} callback The callback that receives the log message.
  */
-export function addLogger(callback: (msg: any) => any) {
+export function addLogger(callback: (msg: any, tag: string) => void) {
     if (!TypeUtils.isNullOrUndefined(callback)) {
         _loggers.push(callback);
     }
@@ -193,7 +193,10 @@ export function addLogger(callback: (msg: any) => any) {
  * @param {ILoginConfiguration} [config] The configuration to use.
  */
 export function init(config?: ILoginConfiguration): IInitializationResult {
-    return SocialLogin.initEnvironment(config);    
+    return SocialLogin.initEnvironment(config,
+                                       function() {
+                                           return _loggers;
+                                       });
 }
 
 /**

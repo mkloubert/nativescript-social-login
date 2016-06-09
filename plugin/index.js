@@ -62,7 +62,9 @@ exports.addLogger = addLogger;
  * @param {ILoginConfiguration} [config] The configuration to use.
  */
 function init(config) {
-    return SocialLogin.initEnvironment(config);
+    return SocialLogin.initEnvironment(config, function () {
+        return _loggers;
+    });
 }
 exports.init = init;
 /**
