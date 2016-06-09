@@ -278,3 +278,13 @@ SocialLogin.loginWithFacebook(
     }
 );
 ```
+
+## Logging
+
+If you want to get the logging output of the module, you can use `SocialLogin.addLogger()` function to add a callback that receives a message from the module:
+
+```typescript
+SocialLogin.addLogger(function(msg: any, tag: string) {
+    console.log('[nativescript-social-login]: (' + tag + ') + ' + msg);
+});
+```
