@@ -433,9 +433,9 @@ function loginWithProvider(provider, callback) {
             loginWithFacebook(callback);
             break;
 
-        case "twitter":
+        /* case "twitter":
             loginWithTwitter(callback);
-            break;
+            break; */
 
         default:
             throw "Provider '" + provider + "' is NOT supported!";

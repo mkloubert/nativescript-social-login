@@ -1,7 +1,7 @@
 {
   "name": "nativescript-social-login",
   "description": "NativeScript plugin for social (token based) log-ins.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "nativescript": {
     "platforms": {
       "android": "1.1.0",
@@ -15,6 +15,7 @@
   "keywords": [
     "NativeScript",
     "Google",
+    "Facebook",
     "Social",
     "Login",
     "Access",
