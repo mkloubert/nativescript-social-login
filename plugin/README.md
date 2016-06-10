@@ -23,7 +23,13 @@
 
 The full documentation can be found on [readme.io](https://nativescript-sociallogin.readme.io/).
 
-Otherwise...
+## Changes
+
+### v1.2.x to 1.3.x
+
+#### Google
+
+* The default value for `ILoginConfiguration.google.isRequestAuthCode` is `(false)` now. This behavior will not be changed in the future again!
 
 ## Installation
 
@@ -176,10 +182,10 @@ interface ILoginConfiguration {
         serverClientId?: string;
         
         /**
-         * If true (default), it will request for offline auth code which server can use for fetching or refreshing auth tokens.
+         * If true), it will request for offline auth code which server can use for fetching or refreshing auth tokens.
          * It will be set in authCode property of result object.
          * 
-         * If false, it will request for token id. it will be set in authToken property of result object.
+         * If false (default), it will request for token id. it will be set in authToken property of result object.
          */
         isRequestAuthCode?: boolean;
     }

@@ -39,7 +39,7 @@ var _rcFacebookSignIn;
 var _rcGoogleSignIn;
 var _twitterKey;
 var _twitterSecret;
-var _isGoogleRequestAuthCode = true;
+var _isGoogleRequestAuthCode;
 
 var actionRunnable = java.lang.Runnable.extend({
     action: undefined,
@@ -99,6 +99,7 @@ function initEnvironment(cfg,
         }
 
         // google.isRequestAuthCode
+        _isGoogleRequestAuthCode = false;
         if (!TypeUtils.isNullOrUndefined(cfg.google.isRequestAuthCode)) {
             _isGoogleRequestAuthCode = cfg.google.isRequestAuthCode;
         }
@@ -448,12 +449,15 @@ function loginWithGoogle(callback) {
             .requestProfile();
 
         if (!TypeUtils.isNullOrUndefined(_googleServerClientId)) {
-            logMsg('Will request server auth code', LOGTAG_LOGIN_WITH_GOOGLE);
+            
 
-            if(_isGoogleRequestAuthCode){
-                optionBuilder = optionBuilder.requestServerAuthCode(_googleServerClientId, false);
-            }else{
+            if (!_isGoogleRequestAuthCode){
+                logMsg('Will request ID token', LOGTAG_LOGIN_WITH_GOOGLE);                
                 optionBuilder = optionBuilder.requestIdToken(_googleServerClientId);
+            }
+            else {    
+                logMsg('Will request server auth code', LOGTAG_LOGIN_WITH_GOOGLE);
+                optionBuilder = optionBuilder.requestServerAuthCode(_googleServerClientId, false);
             }
         }
 
