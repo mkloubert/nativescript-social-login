@@ -62,5 +62,32 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<!-- FACEBOOK  AND GOOGLE LOGIN GOES HERE -->
+
+	<key>CFBundleURLTypes</key>
+	<array>
+		<!-- FACEBOOK START -->
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb{YOUR_FACEBOOK_APP_ID_HERE}</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+	<key>FacebookAppID</key>
+	<string>{YOUR_FACEBOOK_APP_ID_HERE}</string>
+	<key>FacebookDisplayName</key>
+	<string>Nativescript social login facebook</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+			<string>fbauth2</string>
+			<string>fbapi</string>
+			<string>fb-messenger-api</string>
+			<string>fbshareextension</string>
+	</array>
+	<!-- FACEBOOK END -->
 </dict>
 </plist>
