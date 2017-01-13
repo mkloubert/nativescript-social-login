@@ -50,7 +50,8 @@ function createViewModel() {
             var result = SocialLogin.init({
                 google: {
                     serverClientId: googleServerClientId
-                }
+                },
+                facebook: {}
             });
 
             viewModel.set("initResult", result);
@@ -72,10 +73,10 @@ function createViewModel() {
             }
 
             viewModel.set("initResultLog", log);
-        }   
+        }
         catch (e) {
             viewModel.set("initResultLog", "[ERROR]: " + e);
-        }     
+        }
     };
 
     viewModel.saveSettings = function() {
@@ -83,10 +84,10 @@ function createViewModel() {
             // googleServerClientId
             AppSettings.setString("googleServerClientId",
                                   viewModel.get("googleServerClientId"));
-        }   
+        }
         catch (e) {
             console.log("[ERROR] viewModel.saveSettings(): " + e);
-        } 
+        }
     };
 
     viewModel.loginWithFacebook = function() {

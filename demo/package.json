@@ -19,6 +19,11 @@
     "tns-platform-declarations": "^2.4.4"
   },
   "devDependencies": {
-    "typescript": "^2.1.4"
+    "typescript": "^2.1.4",
+    "babel-traverse": "6.21.0",
+    "babel-types": "6.21.0",
+    "babylon": "6.15.0",
+    "lazy": "1.0.11",
+    "nativescript-dev-android-snapshot": "^0.*.*"
   }
 }

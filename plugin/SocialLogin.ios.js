@@ -24,6 +24,8 @@ var _getLoggers;
 
 let _facebookCallbackManager;
 
+let facebookLoginManager;
+
 let facebookInit = false;
 
 function logMsg(msg, tag) {
@@ -57,7 +59,7 @@ function initEnvironment(cfg,
 
     if (!!cfg.facebook) {
 
-      let facebookLoginManager = FBSDKLoginManager.alloc().init();
+      facebookLoginManager = FBSDKLoginManager.alloc().init();
       if (facebookLoginManager) {
           facebookLoginManager.logOut();
           if (!!cfg.facebook.loginBehavior) {
@@ -138,13 +140,29 @@ function loginWithFacebook(callback) {
     }
   }
 
+  let permissions;
+
   if (!permissions) { permissions = ["publish_actions"]; }
 
-  loginManager.logInWithPublishPermissionsHandler(permissions, _facebookCallbackManager);
+  facebookLoginManager.logInWithPublishPermissionsHandler(permissions, _facebookCallbackManager);
 }
 
 function loginWithProvider(provider, callback) {
-  logMsg('NOT IMPLEMENTED!', 'loginWithProvider()');
-  throw provider + " is currently NOT supported!";
+  if (!provider) {
+      provider = '';
+  }
+
+  provider = ('' + provider).toLowerCase().trim();
+
+  logMsg("Provider: " + provider);
+
+  switch (provider) {
+      case "facebook":
+        loginWithFacebook(callback);
+        break;
+      default:
+        logMsg('NOT IMPLEMENTED!', 'loginWithProvider()');
+        throw provider + " is currently NOT supported!";
+  }
 }
 exports.loginWithProvider = loginWithProvider;
