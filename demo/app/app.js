@@ -1,4 +1,4 @@
 "use strict";
 var Application = require("application");
 Application.start({ moduleName: "main-page" });
-//# sourceMappingURL=app.js.map
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXBwLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiYXBwLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7QUFBQSx5Q0FBNEM7QUFFNUMsV0FBVyxDQUFDLEtBQUssQ0FBQyxFQUFFLFVBQVUsRUFBRSxXQUFXLEVBQUUsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IEFwcGxpY2F0aW9uID0gcmVxdWlyZShcImFwcGxpY2F0aW9uXCIpO1xuXG5BcHBsaWNhdGlvbi5zdGFydCh7IG1vZHVsZU5hbWU6IFwibWFpbi1wYWdlXCIgfSk7XG4iXX0=
