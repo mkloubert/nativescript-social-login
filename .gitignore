@@ -7,3 +7,4 @@
 /plugin/*.map
 /demo/app/SocialLogin/*.map
 /demo/.vscode
+/demo/hooks/
