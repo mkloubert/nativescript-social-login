@@ -11,8 +11,8 @@
 
 | Provider | Android | iOS |
 | ---- | ---- | ---- |
-| Google | Yes | No |
-| Facebook | Yes | No |
+| Google | Yes | WIP |
+| Facebook | Yes | Yes |
 | Twitter | No | No |
 
 ## License
@@ -51,12 +51,12 @@ inside your app project to install the module.
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- ... -->
-    
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    
+
     <!-- ... -->
 </manifest>
 ```
@@ -67,20 +67,20 @@ inside your app project to install the module.
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- ... -->
-    
+
     <application>
         <!-- ... -->
-        
+
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id" />
-        
+
         <activity android:name="com.facebook.FacebookActivity"
                   android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:label="@string/app_name" />
-        
+
         <!-- ... -->
     </application>
-    
+
     <!-- ... -->
 </manifest>
 ```
@@ -175,16 +175,16 @@ interface ILoginConfiguration {
          * Initialize Google or not. Default: (true)
          */
         initialize?: boolean,
-       
+
        /**
         * The server client ID for requesting server auth token.
         */
         serverClientId?: string;
-        
+
         /**
          * If true, it will request for offline auth code which server can use for fetching or refreshing auth tokens.
          * It will be set in authCode property of result object.
-         * 
+         *
          * If false (default), it will request for token id. it will be set in authToken property of result object.
          */
         isRequestAuthCode?: boolean;
@@ -245,7 +245,7 @@ interface ILoginResult {
      * The display name.
      */
     displayName?: string;
-    
+
     /**
      * Gets the error (if defined).
      */

@@ -1,3 +1,5 @@
+/demo/node_modules
+/demo/platforms
 /pushall.sh
 /plugin/android17.d.ts
 /plugin/ios.d.ts
