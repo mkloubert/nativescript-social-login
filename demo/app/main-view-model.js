@@ -48,9 +48,9 @@ function createViewModel() {
             var googleServerClientId = viewModel.get("googleServerClientId");
 
             var result = SocialLogin.init({
-                google: {
-                    serverClientId: googleServerClientId
-                },
+                // google: {
+                //     serverClientId: googleServerClientId
+                // },
                 facebook: {}
             });
 
@@ -93,6 +93,7 @@ function createViewModel() {
     viewModel.loginWithFacebook = function() {
         try {
             SocialLogin.loginWithFacebook(function(result) {
+                console.log(result);
                 try {
                     viewModel.set("loginResult", result);
                 }

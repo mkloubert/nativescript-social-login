@@ -62,6 +62,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+	</dict>
 
 	<!-- FACEBOOK  AND GOOGLE LOGIN GOES HERE -->
 
@@ -71,14 +76,14 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb{YOUR_FACEBOOK_APP_ID_HERE}</string>
+				<string>fb711677658998487</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>FacebookAppID</key>
-	<string>{YOUR_FACEBOOK_APP_ID_HERE}</string>
+	<string>711677658998487</string>
 	<key>FacebookDisplayName</key>
 	<string>Nativescript social login facebook</string>
 	<key>LSApplicationQueriesSchemes</key>
