@@ -23,11 +23,11 @@
 var Application = require("application");
 var TypeUtils = require("utils/types");
 
-var LOGTAG_FB_LOGIN_MGR = 'com.facebook.login.LoginManager';
-var LOGTAG_INIT_ENV = 'initEnvironment()';
-var LOGTAG_LOGIN_WITH_FB = 'loginWithFacebook()';
-var LOGTAG_LOGIN_WITH_GOOGLE = 'loginWithGoogle()';
-var LOGTAG_ON_ACTIVITY_RESULT = 'onActivityResult()';
+var LOGTAG_FB_LOGIN_MGR = "facebookLoginManager";
+var LOGTAG_INIT_ENV = "initEnvironment()";
+var LOGTAG_LOGIN_WITH_FB = "loginWithFacebook()";
+var LOGTAG_LOGIN_WITH_GOOGLE = "loginWithGoogle()";
+var LOGTAG_ON_GOOGLE_RESULT = "Google successCallback";
 
 var _getLoggers;
 
@@ -35,6 +35,10 @@ var _facebookCallbackManager;
 var _googleCallbackManager;
 
 var _googleProfileInfoCallback;
+
+var googleFailCallback;
+var googleCancelCallback;
+var googleSuccessCallback;
 
 var facebookLoginManager;
 
@@ -271,136 +275,159 @@ function loginWithFacebook(callback) {
   facebookLoginManager.logInWithReadPermissionsHandler(permissions, _facebookCallbackManager);
 }
 
-// createSignInDelegate = function(){
+function createSignInDelegate() {
 
-//   // var self = this
-//   var MySignInDelegate = (function (_super) {
-//   __extends(MySignInDelegate, _super);
+  // var self = this
+  var MySignInDelegate = (function (_super) {
+  __extends(MySignInDelegate, _super);
 
-//   function MySignInDelegate() {
-//       _super.apply(this, arguments);
-//   }
+  function MySignInDelegate() {
+      _super.apply(this, arguments);
+  }
 
-//   MySignInDelegate.prototype.signInDidSignInForUserWithError = function(signIn, user, error){
-//       if (error) {
-//           self._failCallback("logIn");
-//       } else {
+  MySignInDelegate.prototype.signInDidSignInForUserWithError = function(signIn, user, error){
+      if (error) {
+          googleFailCallback(error);
+      } else {
 
-//           try {
-//               var resultUser = {
-//                   email: user.profile.email,
-//                   familyName: user.profile.familyName,
-//                   fullName: user.profile.name,
-//                   givenName: user.profile.givenName,
-//                   idToken: user.authentication.idToken, // Safe to send to the server
-//                   userId: user.userID,                  // For client-side use only!
-//               };
+          try {
+              var resultUser = {
+                  userToken: user.profile.email,
+                  // familyName: user.profile.familyName,
+                  displayName: user.profile.name,
+                  // givenName: user.profile.givenName,
+                  authCode: user.authentication.idToken, // Safe to send to the server
+                  id: user.userID,                  // For client-side use only!
+              };
 
-//               self._successCallback("logIn");
+          //               authToken: authToken,
+          // code: code,
+          // displayName: displayName,
+          // error: err,
+          // id: id,
+          // photo: photo,
+          // userToken: usrToken,
 
-//               if (self._profileInfoCallback) {
-//                 self._profileInfoCallback(resultUser);
-//               } else {
-//                 console.log("## set profileInfoCallback on login");
-//               }
-//           } catch (error) {
-//               this._failCallback(error);
-//           }
+              googleSuccessCallback(resultUser);
 
-//       }
-//   };
+              if (!_googleProfileInfoCallback) {
+                logMsg("no callback set", LOGTAG_ON_GOOGLE_RESULT);
+              }
+          } catch (error) {
+              googleFailCallback(error);
+          }
 
-//   MySignInDelegate.prototype.signInDidDisconnectWithUserWithError = function(signIn, user, error){
-//       try {
-//           if (error) {
-//               self._failCallback(error.localizedDescription);
-//           } else {
-//               self._successCallback("logOut");
-//           }
-//       } catch (error) {
-//           this._failCallback(error);
-//       }
-//   };
+      }
+  };
 
-//   // MySignInDelegate.prototype.signInWillDispatchError = function(signIn, error) {
-//   // };
+  MySignInDelegate.prototype.signInDidDisconnectWithUserWithError = function(signIn, user, error){
+      try {
+          if (error) {
+              googleFailCallback(error.localizedDescription);
+          } else {
+              // googleSuccessCallback("logOut");
+              googleCancelCallback();
+          }
+      } catch (error) {
+          googleFailCallback(error);
+      }
+  };
 
-//   MySignInDelegate.prototype.signInPresentViewController = function (signIn, viewController) {
-//       var uiview = applicationModule.ios.rootController;
-//       uiview.presentViewControllerAnimatedCompletion(viewController, true, null);
-//   };
+  // MySignInDelegate.prototype.signInWillDispatchError = function(signIn, error) {
+  // };
 
-//   MySignInDelegate.prototype.signInDismissViewController = function(signIn, viewController) {
-//       viewController.dismissViewControllerAnimatedCompletion(true, null);
-//   };
+  MySignInDelegate.prototype.signInPresentViewController = function (signIn, viewController) {
+      var uiview = Application.ios.rootController;
+      uiview.presentViewControllerAnimatedCompletion(viewController, true, null);
+  };
 
-//   MySignInDelegate.ObjCProtocols = [GIDSignInDelegate, GIDSignInUIDelegate];
+  MySignInDelegate.prototype.signInDismissViewController = function(signIn, viewController) {
+      viewController.dismissViewControllerAnimatedCompletion(true, null);
+  };
 
-//   return MySignInDelegate;
+  MySignInDelegate.ObjCProtocols = [GIDSignInDelegate, GIDSignInUIDelegate];
 
-//   }(NSObject));
+  return MySignInDelegate;
 
-//   return new MySignInDelegate();
-// };
+  }(NSObject));
 
-// function loginWithGoogle(callback) {
+  return new MySignInDelegate();
+};
 
-//   if (!!callback) {
-//     if (typeof callback === "function") {
-//       _googleCallbackManager = callback;
+function loginWithGoogle(callback) {
 
-//     } else if (typeof callback === "object") {
-//       var failCallback;
-//       var cancelCallback;
-//       var successCallback;
+  var invokeLoginCallbackForGoogle = function (resultCtx) {
+      resultCtx.provider = "google";
 
-//       if (!!callback.failCallback && typeof callback.failCallback === "function") {
-//         failCallback = callback.failCallback;
-//       } else {
-//         // TODO
-//       }
+      logResult(resultCtx, LOGTAG_LOGIN_WITH_GOOGLE);
 
-//       if (!!callback.cancelCallback && typeof callback.cancelCallback === "function") {
-//         cancelCallback = callback.cancelCallback;
-//       } else {
-//         // TODO
-//       }
+      var cb = callback;
+      if (cb) {
+        cb(resultCtx);
+      }
+  };
 
-//       if (!!callback.successCallback && typeof callback.successCallback === "function") {
-//         successCallback = callback.successCallback;
-//       } else {
-//         // TODO
-//       }
+  googleFailCallback = function(error) {
+    logMsg("onError()", LOGTAG_LOGIN_WITH_GOOGLE);
 
-//       var delegate = createSignInDelegate();
-//       googleSignIn.delegate = delegate;
-//       googleSignIn.uiDelegate = delegate;
+    invokeLoginCallbackForGoogle({
+        code: -2,
+        error: error,
+    });
+  };
 
-//       _googleCallbackManager = function (result, error) {
-//         if (error) {
-//           failCallback(error);
-//           return;
-//         }
-//         if (!result) {
-//           failCallback("Null error");
-//           return;
-//         }
-//         if (result.isCancelled) {
-//           cancelCallback();
-//           return;
-//         }
-//         if (result.token) {
-//           successCallback(result);
-//         } else {
-//           failCallback("Could not acquire an access token");
-//           return;
-//         }
-//       };
+  googleCancelCallback = function() {
+    logMsg("onCancel()", LOGTAG_LOGIN_WITH_GOOGLE);
 
-//     }
-//   }
-//   // TODO
-// };
+    invokeLoginCallbackForGoogle({
+        code: 1,
+    });
+  };
+
+  googleSuccessCallback = function(result) {
+    logMsg("onSuccess().onCompleted()", LOGTAG_LOGIN_WITH_GOOGLE);
+
+    invokeLoginCallbackForGoogle({
+      authCode: result.authCode,
+      code: 0,
+      displayName: result.displayName,
+      error: result.error,
+      id: result.id,
+      userToken: result.userToken,
+    });
+  };
+
+  if (!!callback) {
+    if (typeof callback === "object") {
+
+      if (!!callback.failCallback && typeof callback.failCallback === "function") {
+        googleFailCallback = callback.failCallback;
+      }
+
+      if (!!callback.cancelCallback && typeof callback.cancelCallback === "function") {
+        googleCancelCallback = callback.cancelCallback;
+      }
+
+      if (!!callback.successCallback && typeof callback.successCallback === "function") {
+        googleSuccessCallback = callback.successCallback;
+      }
+
+    }
+
+    _googleProfileInfoCallback = callback;
+
+    var delegate = createSignInDelegate();
+    if (!googleSignIn.delegate) {
+      googleSignIn.delegate = delegate;
+    }
+    if (!googleSignIn.uiDelegate) {
+      googleSignIn.uiDelegate = delegate;
+    }
+
+    googleSignIn.signIn();
+  }
+  // TODO
+};
 
 function loginWithProvider(provider, callback) {
   if (!provider) {

@@ -1,0 +1,4 @@
+module Google2 {
+  umbrella "../../../../../platforms/ios/Pods/Headers/Public"
+  export *
+}
