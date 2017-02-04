@@ -139,7 +139,6 @@ Add the following to your Info.plist file located in app/App_Resources/iOS
 
 
 ```xml
-
 <key>CFBundleURLTypes</key>
     <array>
         <dict>
@@ -152,7 +151,7 @@ Add the following to your Info.plist file located in app/App_Resources/iOS
     <key>CFBundleVersion</key>
     <string>1.0</string>
     <key>FacebookAppID</key>
-  <string>{YOUR_FACEBOOK_APP_ID_HERE}</string>
+    <string>{YOUR_FACEBOOK_APP_ID_HERE}</string>
     <key>FacebookDisplayName</key>
     <string>FacebookLoginDemo</string>
     <key>LSApplicationQueriesSchemes</key>
@@ -162,6 +161,7 @@ Add the following to your Info.plist file located in app/App_Resources/iOS
         <string>fb-messenger-api</string>
         <string>fbshareextension</string>
     </array>
+
 ```
 https://developers.facebook.com/docs/ios
 
@@ -172,7 +172,7 @@ Add the following code just before `application.start({ /* */ });` or `platformN
 
 ##### TypeScript
 
-`
+```typescript
 if (application.ios) {
 
   class MyDelegate extends UIResponder implements UIApplicationDelegate {
@@ -202,11 +202,11 @@ if (application.ios) {
   application.ios.delegate = MyDelegate;
 
 }
-`
+```
 
 ##### JavaScript
 
-`
+```javascript
 if (application.ios) {
     var MyDelegate = (function (_super) {
         __extends(MyDelegate, _super);
@@ -233,7 +233,7 @@ if (application.ios) {
     MyDelegate.ObjCProtocols = [UIApplicationDelegate];
     application.ios.delegate = MyDelegate;
 }
-`
+```
 
 
 
