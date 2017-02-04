@@ -36,6 +36,8 @@ function createViewModel() {
                 viewModel.facebookAppId = undefined;
             }
         }
+    } else if (Application.ios) {
+        viewModel.facebookAppId = NSBundle.mainBundle.objectForInfoDictionaryKey("FacebookAppID");
     }
 
     viewModel.initialize = function(args) {
@@ -48,9 +50,9 @@ function createViewModel() {
             var googleServerClientId = viewModel.get("googleServerClientId");
 
             var result = SocialLogin.init({
-                // google: {
-                //     serverClientId: googleServerClientId
-                // },
+                google: {
+                    serverClientId: googleServerClientId
+                },
                 facebook: {}
             });
 

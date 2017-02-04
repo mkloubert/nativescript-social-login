@@ -16,13 +16,13 @@ declare class FBSDKApplicationDelegate {
   static sharedInstance():any;
 };
 
-// declare class GGLContext {
-//   static sharedInstance():any;
-// };
-//
-// declare class GIDSignIn {
-//   static sharedInstance():any;
-// };
+declare class GGLContext {
+  static sharedInstance():any;
+};
+
+declare class GIDSignIn {
+  static sharedInstance():any;
+};
 
 declare class FBSDKAppEvents{
   static activateApp();
@@ -37,29 +37,32 @@ if (application.ios) {
     public static ObjCProtocols = [UIApplicationDelegate];
 
     applicationDidFinishLaunchingWithOptions(application: UIApplication, launchOptions: NSDictionary): boolean {
-      return FBSDKApplicationDelegate.sharedInstance().applicationDidFinishLaunchingWithOptions(application, launchOptions); // facebook login delegate
+      let gglDelegate = false;
+
+      try {
+        const errorRef = new interop.Reference();
+        GGLContext.sharedInstance().configureWithError(errorRef);
+
+        const signIn = GIDSignIn.sharedInstance();
+        gglDelegate = true;
+      } catch (error) {
+        console.log(error);
+      }
+
+      const fcbDelegate = FBSDKApplicationDelegate.sharedInstance().applicationDidFinishLaunchingWithOptions(application, launchOptions); // facebook login delegate
+
+      return gglDelegate || fcbDelegate;
     }
 
     applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation) {
-      return FBSDKApplicationDelegate.sharedInstance().applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation); // facebook login delegate
-    }
+      const fcbDelegate = FBSDKApplicationDelegate.sharedInstance().applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation); // facebook login delegate
+      const gglDelegate = GIDSignIn.sharedInstance().handleURLSourceApplicationAnnotation(url, sourceApplication, annotation); // google login delegate
 
-    applicationDidBecomeActive(application: UIApplication): void {
-      console.log("ACTIVATE APP");
-      // FBSDKAppEvents.activateApp();
-    }
-
-    applicationWillTerminate(application: UIApplication): void {
-      //Do something you want here
-    }
-
-    applicationDidEnterBackground(application: UIApplication): void {
-      //Do something you want here
+      return fcbDelegate || gglDelegate;
     }
   }
 
   application.ios.delegate = MyDelegate;
-
 }
 
 application.start({ moduleName: "main-page" });

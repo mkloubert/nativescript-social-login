@@ -71,7 +71,33 @@
 	<!-- FACEBOOK  AND GOOGLE LOGIN GOES HERE -->
 
 	<key>CFBundleURLTypes</key>
-	<array>
+  <array>
+		<!-- GOOGLE START -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>304428280321-215r5efqrhne85qii12e4uhu6799muj8.apps.googleusercontent.com</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.304428280321-215r5efqrhne85qii12e4uhu6799muj8</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>cheefo.nativescript.andrii</string>
+			</array>
+		</dict>
+		<!-- GOOGLE END -->
 		<!-- FACEBOOK START -->
 		<dict>
 			<key>CFBundleURLSchemes</key>
@@ -79,20 +105,21 @@
 				<string>fb711677658998487</string>
 			</array>
 		</dict>
-	</array>
-	<key>CFBundleVersion</key>
-	<string>1.0</string>
-	<key>FacebookAppID</key>
+  </array>
+  <key>CFBundleVersion</key>
+  <string>1.0</string>
+  <key>FacebookAppID</key>
 	<string>711677658998487</string>
-	<key>FacebookDisplayName</key>
-	<string>Nativescript social login facebook</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-			<string>fbauth2</string>
-			<string>fbapi</string>
-			<string>fb-messenger-api</string>
-			<string>fbshareextension</string>
-	</array>
+  <key>FacebookDisplayName</key>
+  <string>Cheefo nativescript test</string>
+  <key>LSApplicationQueriesSchemes</key>
+  <array>
+      <string>fbauth2</string>
+      <string>fbapi</string>
+      <string>fb-messenger-api</string>
+      <string>fbshareextension</string>
+  </array>
 	<!-- FACEBOOK END -->
+
 </dict>
 </plist>
