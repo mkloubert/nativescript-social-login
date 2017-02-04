@@ -27,9 +27,9 @@ The full documentation can be found on [readme.io](https://nativescript-sociallo
 
 ### v1.3.x to 1.4.x
 
-#### iOS
+#### Facebook
 
-* Added facebook login
+* Implemented login on iOS
 
 ### v1.2.x to 1.3.x
 
@@ -128,6 +128,115 @@ dependencies {
     }
 }
 ```
+
+### iOS
+
+#### Info.plist
+
+##### Facebook
+
+Add the following to your Info.plist file located in app/App_Resources/iOS
+
+
+```xml
+
+<key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+        <string>fb{YOUR_FACEBOOK_APP_ID_HERE}</string>
+            </array>
+        </dict>
+    </array>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>FacebookAppID</key>
+  <string>{YOUR_FACEBOOK_APP_ID_HERE}</string>
+    <key>FacebookDisplayName</key>
+    <string>FacebookLoginDemo</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>fbauth2</string>
+        <string>fbapi</string>
+        <string>fb-messenger-api</string>
+        <string>fbshareextension</string>
+    </array>
+```
+https://developers.facebook.com/docs/ios
+
+#### Application main file
+
+Add this to the file where you start the application.
+Add the following code just before `application.start({ /* */ });` or `platformNativeScriptDynamic().bootstrapModule(/* */)` if you use Angular:
+
+##### TypeScript
+
+`
+if (application.ios) {
+
+  class MyDelegate extends UIResponder implements UIApplicationDelegate {
+    public static ObjCProtocols = [UIApplicationDelegate];
+
+    applicationDidFinishLaunchingWithOptions(application: UIApplication, launchOptions: NSDictionary): boolean {
+      return FBSDKApplicationDelegate.sharedInstance().applicationDidFinishLaunchingWithOptions(application, launchOptions); // facebook login delegate
+    }
+
+    applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation) {
+      return FBSDKApplicationDelegate.sharedInstance().applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation); // facebook login delegate
+    }
+
+    applicationDidBecomeActive(application: UIApplication): void {
+      //Do something you want here
+    }
+
+    applicationWillTerminate(application: UIApplication): void {
+      //Do something you want here
+    }
+
+    applicationDidEnterBackground(application: UIApplication): void {
+      //Do something you want here
+    }
+  }
+
+  application.ios.delegate = MyDelegate;
+
+}
+`
+
+##### JavaScript
+
+`
+if (application.ios) {
+    var MyDelegate = (function (_super) {
+        __extends(MyDelegate, _super);
+        function MyDelegate() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        MyDelegate.prototype.applicationDidFinishLaunchingWithOptions = function (application, launchOptions) {
+            return FBSDKApplicationDelegate.sharedInstance().applicationDidFinishLaunchingWithOptions(application, launchOptions); // facebook login delegate
+        };
+        MyDelegate.prototype.applicationOpenURLSourceApplicationAnnotation = function (application, url, sourceApplication, annotation) {
+            return FBSDKApplicationDelegate.sharedInstance().applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation); // facebook login delegate
+        };
+        MyDelegate.prototype.applicationDidBecomeActive = function (application) {
+            //Do something you want here
+        };
+        MyDelegate.prototype.applicationWillTerminate = function (application) {
+            //Do something you want here
+        };
+        MyDelegate.prototype.applicationDidEnterBackground = function (application) {
+            //Do something you want here
+        };
+        return MyDelegate;
+    }(UIResponder));
+    MyDelegate.ObjCProtocols = [UIApplicationDelegate];
+    application.ios.delegate = MyDelegate;
+}
+`
+
+
+
 
 ## Usage
 
