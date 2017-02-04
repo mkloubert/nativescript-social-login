@@ -20,13 +20,28 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+var Application = require("application");
+var TypeUtils = require("utils/types");
+
+var LOGTAG_FB_LOGIN_MGR = 'com.facebook.login.LoginManager';
+var LOGTAG_INIT_ENV = 'initEnvironment()';
+var LOGTAG_LOGIN_WITH_FB = 'loginWithFacebook()';
+var LOGTAG_LOGIN_WITH_GOOGLE = 'loginWithGoogle()';
+var LOGTAG_ON_ACTIVITY_RESULT = 'onActivityResult()';
+
 var _getLoggers;
 
-let _facebookCallbackManager;
+var _facebookCallbackManager;
+var _googleCallbackManager;
 
-let facebookLoginManager;
+var _googleProfileInfoCallback;
 
-let facebookInit = false;
+var facebookLoginManager;
+
+var googleSignIn = null;
+
+var facebookInit = false;
+var googleInit   = false;
 
 function logMsg(msg, tag) {
     try {
@@ -34,16 +49,14 @@ function logMsg(msg, tag) {
 
         for (var i = 0; i < loggers.length; i++) {
             try {
-                var l = loggers[i];
-                l(msg, tag);
-            }
-            catch (e) {
-                console.log("[ERROR] nativescript-social-login >> logMsg() >> logger[" + i + "]: " + e);
+              var l = loggers[i];
+              l(msg, tag);
+            } catch (e) {
+              console.log("[ERROR] nativescript-social-login >> logMsg() >> logger[" + i + "]: " + e);
             }
         }
-    }
-    catch (e) {
-        console.log("[ERROR] nativescript-social-login >> logMsg(): " + e);
+    } catch (e) {
+      console.log("[ERROR] nativescript-social-login >> logMsg(): " + e);
     }
 }
 
@@ -55,7 +68,6 @@ function initEnvironment(cfg,
     if (!cfg) {
         cfg = {};
     }
-
 
     if (!!cfg.facebook) {
 
@@ -70,89 +82,332 @@ function initEnvironment(cfg,
 
     }
 
-    return {
+    if (!!cfg.google) {
+
+      if (TypeUtils.isNullOrUndefined(cfg.google.shouldFetchBasicProfile)) {
+        cfg.google.shouldFetchBasicProfile = true;
+      }
+
+      googleSignIn = GIDSignIn.sharedInstance();
+      googleSignIn.shouldFetchBasicProfile = cfg.google.shouldFetchBasicProfile;
+      googleSignIn.scopes = cfg.google.scopes || [ "profile", "email" ];
+
+      if (cfg.google.serverClientId) {
+        googleSignIn.clientID = cfg.google.serverClientId;
+      }
+
+      googleInit = true;
+
+    }
+
+    var result = {
         facebook: {
             isInitialized: facebookInit,
         },
         google: {
-            isInitialized: undefined,
+            isInitialized: googleInit,
         },
         twitter: {
             isInitialized: undefined,
-        }
+      },
     };
+
+    logMsg("google.isInitialized: " + result.google.isInitialized, LOGTAG_INIT_ENV);
+    logMsg("facebook.isInitialized: " + result.facebook.isInitialized, LOGTAG_INIT_ENV);
+    logMsg("twitter.isInitialized: " + result.twitter.isInitialized, LOGTAG_INIT_ENV);
+
+    return result;
 }
 exports.initEnvironment = initEnvironment;
 
+function logResult(resultCtx, tag) {
+    for (var p in resultCtx) {
+        if (resultCtx.hasOwnProperty(p)) {
+            logMsg("result." + p + " = " + resultCtx[p],
+                   tag);
+        }
+    }
+}
+
 function loginWithFacebook(callback) {
 
+  var invokeLoginCallbackForFacebook = function (resultCtx) {
+      resultCtx.provider = "facebook";
+
+      logResult(resultCtx, LOGTAG_FB_LOGIN_MGR);
+
+      var cb = callback;
+      if (cb) {
+        cb(resultCtx);
+      }
+  };
+  var failCallback;
+  var cancelCallback;
+  var successCallback;
+
+  failCallback = function(error) {
+    logMsg("onError()", LOGTAG_FB_LOGIN_MGR);
+
+    invokeLoginCallbackForFacebook({
+        code: -2,
+        error: error,
+    });
+  };
+
+  cancelCallback = function() {
+    logMsg("onCancel()", LOGTAG_FB_LOGIN_MGR);
+
+    invokeLoginCallbackForFacebook({
+        code: 1,
+    });
+  };
+
+  successCallback = function(result) {
+    var authToken;
+    logMsg("onSuccess().onCompleted()", LOGTAG_FB_LOGIN_MGR);
+
+    var resultFn = function(connection, theResult, handler) {
+      var code = 0;
+      var err;
+      var usrToken;
+      var displayName;
+      var photo;
+      var id;
+
+      try {
+        // ID
+        id = theResult.objectForKey("id");
+        // email
+        usrToken = theResult.objectForKey("email");
+
+        // name
+        displayName = theResult.objectForKey("name");
+
+        // photo
+        if (
+            theResult.objectForKey("picture") &&
+            theResult.objectForKey("picture").objectForKey("data") &&
+            theResult.objectForKey("picture").objectForKey("data").objectForKey("url")
+        ) {
+          photo = theResult.objectForKey("picture").objectForKey("data").objectForKey("url");
+        }
+
+      } catch (e) {
+        logMsg("[ERROR] onSuccess().onCompleted(): " + e, LOGTAG_FB_LOGIN_MGR);
+
+        code = -1;
+        err = e;
+      }
+      if (code !== -1) {
+        invokeLoginCallbackForFacebook({
+          authToken: authToken,
+          code: code,
+          displayName: displayName,
+          error: err,
+          id: id,
+          photo: photo,
+          userToken: usrToken,
+        });
+      } else {
+        invokeLoginCallbackForFacebook({
+          code: code,
+          error: err,
+        });
+      }
+    };
+
+    authToken = result.token.tokenString;
+    var fbRequest = FBSDKGraphRequest.alloc();
+
+    fbRequest.tokenString = authToken;
+
+    fbRequest.initWithGraphPathParameters("me", {"fields": "id,about,birthday,email,gender,name,picture"})
+      .startWithCompletionHandler(resultFn);
+  };
+
   if (!!callback) {
-    if (typeof callback === 'function') { _facebookCallbackManager = callback; }
+    if (typeof callback === "object") {
 
-    else if (typeof callback === 'object') {
-      let failCallback;
-      let cancelCallback;
-      let successCallback;
-
-      if (!!callback.failCallback && typeof callback.failCallback === 'function') {
+      if (!!callback.failCallback && typeof callback.failCallback === "function") {
         failCallback = callback.failCallback;
       }
-      else {
-        // TODO
-      }
 
-      if (!!callback.cancelCallback && typeof callback.cancelCallback === 'function') {
+      if (!!callback.cancelCallback && typeof callback.cancelCallback === "function") {
         cancelCallback = callback.cancelCallback;
       }
-      else {
-        // TODO
-      }
 
-      if (!!callback.successCallback && typeof callback.successCallback === 'function') {
+      if (!!callback.successCallback && typeof callback.successCallback === "function") {
         successCallback = callback.successCallback;
       }
-      else {
-        // TODO
-      }
-
-      _facebookCallbackManager = function (result, error) {
-        if (error) {
-          failCallback(error);
-          return;
-        }
-        if (!result) {
-          failCallback("Null error");
-          return;
-        }
-        if (result.isCancelled) {
-          cancelCallback();
-          return;
-        }
-        if (result.token) {
-          successCallback(result);
-        }
-        else {
-          failCallback("Could not acquire an access token");
-          return;
-        }
-      };
 
     }
+    _facebookCallbackManager = function (result, error) {
+      if (error) {
+        failCallback(error);
+        return;
+      }
+      if (!result) {
+        failCallback("Null error");
+        return;
+      }
+      if (result.isCancelled) {
+        cancelCallback();
+        return;
+      }
+      if (result.token) {
+        successCallback(result);
+      } else {
+        failCallback("Could not acquire an access token");
+        return;
+      }
+    };
   }
 
-  let permissions;
+  var permissions;
 
-  if (!permissions) { permissions = ["publish_actions"]; }
+  if (!permissions) { permissions = ["public_profile", "email"]; }
 
-  facebookLoginManager.logInWithPublishPermissionsHandler(permissions, _facebookCallbackManager);
+  // facebookLoginManager.logInWithPublishPermissionsHandler(permissions, _facebookCallbackManager);
+  facebookLoginManager.logInWithReadPermissionsHandler(permissions, _facebookCallbackManager);
 }
+
+// createSignInDelegate = function(){
+
+//   // var self = this
+//   var MySignInDelegate = (function (_super) {
+//   __extends(MySignInDelegate, _super);
+
+//   function MySignInDelegate() {
+//       _super.apply(this, arguments);
+//   }
+
+//   MySignInDelegate.prototype.signInDidSignInForUserWithError = function(signIn, user, error){
+//       if (error) {
+//           self._failCallback("logIn");
+//       } else {
+
+//           try {
+//               var resultUser = {
+//                   email: user.profile.email,
+//                   familyName: user.profile.familyName,
+//                   fullName: user.profile.name,
+//                   givenName: user.profile.givenName,
+//                   idToken: user.authentication.idToken, // Safe to send to the server
+//                   userId: user.userID,                  // For client-side use only!
+//               };
+
+//               self._successCallback("logIn");
+
+//               if (self._profileInfoCallback) {
+//                 self._profileInfoCallback(resultUser);
+//               } else {
+//                 console.log("## set profileInfoCallback on login");
+//               }
+//           } catch (error) {
+//               this._failCallback(error);
+//           }
+
+//       }
+//   };
+
+//   MySignInDelegate.prototype.signInDidDisconnectWithUserWithError = function(signIn, user, error){
+//       try {
+//           if (error) {
+//               self._failCallback(error.localizedDescription);
+//           } else {
+//               self._successCallback("logOut");
+//           }
+//       } catch (error) {
+//           this._failCallback(error);
+//       }
+//   };
+
+//   // MySignInDelegate.prototype.signInWillDispatchError = function(signIn, error) {
+//   // };
+
+//   MySignInDelegate.prototype.signInPresentViewController = function (signIn, viewController) {
+//       var uiview = applicationModule.ios.rootController;
+//       uiview.presentViewControllerAnimatedCompletion(viewController, true, null);
+//   };
+
+//   MySignInDelegate.prototype.signInDismissViewController = function(signIn, viewController) {
+//       viewController.dismissViewControllerAnimatedCompletion(true, null);
+//   };
+
+//   MySignInDelegate.ObjCProtocols = [GIDSignInDelegate, GIDSignInUIDelegate];
+
+//   return MySignInDelegate;
+
+//   }(NSObject));
+
+//   return new MySignInDelegate();
+// };
+
+// function loginWithGoogle(callback) {
+
+//   if (!!callback) {
+//     if (typeof callback === "function") {
+//       _googleCallbackManager = callback;
+
+//     } else if (typeof callback === "object") {
+//       var failCallback;
+//       var cancelCallback;
+//       var successCallback;
+
+//       if (!!callback.failCallback && typeof callback.failCallback === "function") {
+//         failCallback = callback.failCallback;
+//       } else {
+//         // TODO
+//       }
+
+//       if (!!callback.cancelCallback && typeof callback.cancelCallback === "function") {
+//         cancelCallback = callback.cancelCallback;
+//       } else {
+//         // TODO
+//       }
+
+//       if (!!callback.successCallback && typeof callback.successCallback === "function") {
+//         successCallback = callback.successCallback;
+//       } else {
+//         // TODO
+//       }
+
+//       var delegate = createSignInDelegate();
+//       googleSignIn.delegate = delegate;
+//       googleSignIn.uiDelegate = delegate;
+
+//       _googleCallbackManager = function (result, error) {
+//         if (error) {
+//           failCallback(error);
+//           return;
+//         }
+//         if (!result) {
+//           failCallback("Null error");
+//           return;
+//         }
+//         if (result.isCancelled) {
+//           cancelCallback();
+//           return;
+//         }
+//         if (result.token) {
+//           successCallback(result);
+//         } else {
+//           failCallback("Could not acquire an access token");
+//           return;
+//         }
+//       };
+
+//     }
+//   }
+//   // TODO
+// };
 
 function loginWithProvider(provider, callback) {
   if (!provider) {
-      provider = '';
+      provider = "";
   }
 
-  provider = ('' + provider).toLowerCase().trim();
+  provider = ("" + provider).toLowerCase().trim();
 
   logMsg("Provider: " + provider);
 
@@ -160,8 +415,11 @@ function loginWithProvider(provider, callback) {
       case "facebook":
         loginWithFacebook(callback);
         break;
+      case "google":
+        loginWithGoogle(callback);
+        break;
       default:
-        logMsg('NOT IMPLEMENTED!', 'loginWithProvider()');
+        logMsg("NOT IMPLEMENTED!", "loginWithProvider()");
         throw provider + " is currently NOT supported!";
   }
 }
