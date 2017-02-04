@@ -25,6 +25,12 @@ The full documentation can be found on [readme.io](https://nativescript-sociallo
 
 ## Changes
 
+### v1.3.x to 1.4.x
+
+#### iOS
+
+* Added facebook login
+
 ### v1.2.x to 1.3.x
 
 #### Google
