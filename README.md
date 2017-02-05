@@ -11,8 +11,8 @@
 
 | Provider | Android | iOS |
 | ---- | ---- | ---- |
-| Google | Yes | No |
-| Facebook | Yes | No |
+| Google | Yes | Yes |
+| Facebook | Yes | Yes |
 | Twitter | No | No |
 
 ## License
@@ -24,6 +24,18 @@
 The full documentation can be found on [readme.io](https://nativescript-sociallogin.readme.io/).
 
 ## Changes
+
+### v1.4.x to 1.5.x
+
+#### Google
+
+* Implemented login on iOS
+
+### v1.3.x to 1.4.x
+
+#### Facebook
+
+* Implemented login on iOS
 
 ### v1.2.x to 1.3.x
 
@@ -51,12 +63,12 @@ inside your app project to install the module.
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- ... -->
-    
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    
+
     <!-- ... -->
 </manifest>
 ```
@@ -67,20 +79,20 @@ inside your app project to install the module.
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- ... -->
-    
+
     <application>
         <!-- ... -->
-        
+
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id" />
-        
+
         <activity android:name="com.facebook.FacebookActivity"
                   android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:label="@string/app_name" />
-        
+
         <!-- ... -->
     </application>
-    
+
     <!-- ... -->
 </manifest>
 ```
@@ -122,6 +134,142 @@ dependencies {
     }
 }
 ```
+
+### iOS
+
+#### GoogleService-Info.plist
+
+You should generate a `GoogleService-Info.plist` file for your application and add it to `/app/App_Resources/iOS` folder.
+You can get this file and find more info here - https://developers.google.com/identity/sign-in/ios/start-integrating
+
+#### Info.plist
+
+Add the following to your Info.plist file located in app/App_Resources/iOS
+
+
+```xml
+<!-- FACEBOOK AND GOOGLE LOGIN -->
+<key>CFBundleURLTypes</key>
+    <array>
+        <!-- GOOGLE START -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>{YOUR_GOOGLE_REVERSED_CLIENT_ID}</string>
+                <!-- It shoud look like this: com.googleusercontent.apps.123123123-172648sdfsd76f8s7d6f8sd -->
+                <!-- Get it from your GoogleService-Info.plist -->
+                <!-- Read more - https://developers.google.com/identity/sign-in/ios/start-integrating -->
+			</array>
+		</dict>
+		<!-- GOOGLE END -->
+		<!-- FACEBOOK START -->
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+        <string>fb{YOUR_FACEBOOK_APP_ID_HERE}</string>
+            </array>
+        </dict>
+    </array>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>FacebookAppID</key>
+    <string>{YOUR_FACEBOOK_APP_ID_HERE}</string>
+    <key>FacebookDisplayName</key>
+    <string>FacebookLoginDemo</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>fbauth2</string>
+        <string>fbapi</string>
+        <string>fb-messenger-api</string>
+        <string>fbshareextension</string>
+    </array>
+    <!-- FACEBOOK END -->
+
+```
+https://developers.facebook.com/docs/ios
+
+#### Application main file
+
+Add this to the file where you start the application.
+Add the following code just before `application.start({ /* */ });` or `platformNativeScriptDynamic().bootstrapModule(/* */)` if you use Angular:
+
+##### TypeScript
+
+```typescript
+if (application.ios) {
+
+  class MyDelegate extends UIResponder implements UIApplicationDelegate {
+    public static ObjCProtocols = [UIApplicationDelegate];
+
+    applicationDidFinishLaunchingWithOptions(application: UIApplication, launchOptions: NSDictionary): boolean {
+      let gglDelegate = false;
+
+      try {
+        const errorRef = new interop.Reference();
+        GGLContext.sharedInstance().configureWithError(errorRef);
+
+        const signIn = GIDSignIn.sharedInstance();
+        gglDelegate = true;
+      } catch (error) {
+        console.log(error);
+      }
+
+      const fcbDelegate = FBSDKApplicationDelegate.sharedInstance().applicationDidFinishLaunchingWithOptions(application, launchOptions); // facebook login delegate
+
+      return gglDelegate || fcbDelegate;
+    }
+
+    applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation) {
+      const fcbDelegate = FBSDKApplicationDelegate.sharedInstance().applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation); // facebook login delegate
+      const gglDelegate = GIDSignIn.sharedInstance().handleURLSourceApplicationAnnotation(url, sourceApplication, annotation); // google login delegate
+
+      return fcbDelegate || gglDelegate;
+    }
+  }
+
+  application.ios.delegate = MyDelegate;
+}
+```
+
+##### JavaScript
+
+```javascript
+if (application.ios) {
+    var MyDelegate = (function (_super) {
+        __extends(MyDelegate, _super);
+        function MyDelegate() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        MyDelegate.prototype.applicationDidFinishLaunchingWithOptions = function (application, launchOptions) {
+            var gglDelegate = false;
+            try {
+                var errorRef = new interop.Reference();
+                GGLContext.sharedInstance().configureWithError(errorRef);
+                var signIn = GIDSignIn.sharedInstance();
+                gglDelegate = true;
+            }
+            catch (error) {
+                console.log(error);
+            }
+            var fcbDelegate = FBSDKApplicationDelegate.sharedInstance().applicationDidFinishLaunchingWithOptions(application, launchOptions); // facebook login delegate
+            return gglDelegate || fcbDelegate;
+        };
+        MyDelegate.prototype.applicationOpenURLSourceApplicationAnnotation = function (application, url, sourceApplication, annotation) {
+            var fcbDelegate = FBSDKApplicationDelegate.sharedInstance().applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation); // facebook login delegate
+            var gglDelegate = GIDSignIn.sharedInstance().handleURLSourceApplicationAnnotation(url, sourceApplication, annotation); // google login delegate
+            return fcbDelegate || gglDelegate;
+        };
+        return MyDelegate;
+    }(UIResponder));
+    MyDelegate.ObjCProtocols = [UIApplicationDelegate];
+    application.ios.delegate = MyDelegate;
+}
+```
+
+
+
 
 ## Usage
 
@@ -175,16 +323,16 @@ interface ILoginConfiguration {
          * Initialize Google or not. Default: (true)
          */
         initialize?: boolean,
-       
+
        /**
         * The server client ID for requesting server auth token.
         */
         serverClientId?: string;
-        
+
         /**
          * If true, it will request for offline auth code which server can use for fetching or refreshing auth tokens.
          * It will be set in authCode property of result object.
-         * 
+         *
          * If false (default), it will request for token id. it will be set in authToken property of result object.
          */
         isRequestAuthCode?: boolean;
@@ -245,7 +393,7 @@ interface ILoginResult {
      * The display name.
      */
     displayName?: string;
-    
+
     /**
      * Gets the error (if defined).
      */
