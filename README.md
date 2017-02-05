@@ -11,7 +11,7 @@
 
 | Provider | Android | iOS |
 | ---- | ---- | ---- |
-| Google | Yes | WIP |
+| Google | Yes | Yes |
 | Facebook | Yes | Yes |
 | Twitter | No | No |
 
@@ -24,6 +24,12 @@
 The full documentation can be found on [readme.io](https://nativescript-sociallogin.readme.io/).
 
 ## Changes
+
+### v1.4.x to 1.5.x
+
+#### Google
+
+* Implemented login on iOS
 
 ### v1.3.x to 1.4.x
 
@@ -131,16 +137,34 @@ dependencies {
 
 ### iOS
 
-#### Info.plist
+#### GoogleService-Info.plist
 
-##### Facebook
+You should generate a `GoogleService-Info.plist` file for your application and add it to `/app/App_Resources/iOS` folder.
+You can get this file and find more info here - https://developers.google.com/identity/sign-in/ios/start-integrating
+
+#### Info.plist
 
 Add the following to your Info.plist file located in app/App_Resources/iOS
 
 
 ```xml
+<!-- FACEBOOK AND GOOGLE LOGIN -->
 <key>CFBundleURLTypes</key>
     <array>
+        <!-- GOOGLE START -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>{YOUR_GOOGLE_REVERSED_CLIENT_ID}</string>
+                <!-- It shoud look like this: com.googleusercontent.apps.123123123-172648sdfsd76f8s7d6f8sd -->
+                <!-- Get it from your GoogleService-Info.plist -->
+                <!-- Read more - https://developers.google.com/identity/sign-in/ios/start-integrating -->
+			</array>
+		</dict>
+		<!-- GOOGLE END -->
+		<!-- FACEBOOK START -->
         <dict>
             <key>CFBundleURLSchemes</key>
             <array>
@@ -161,6 +185,7 @@ Add the following to your Info.plist file located in app/App_Resources/iOS
         <string>fb-messenger-api</string>
         <string>fbshareextension</string>
     </array>
+    <!-- FACEBOOK END -->
 
 ```
 https://developers.facebook.com/docs/ios
@@ -179,28 +204,32 @@ if (application.ios) {
     public static ObjCProtocols = [UIApplicationDelegate];
 
     applicationDidFinishLaunchingWithOptions(application: UIApplication, launchOptions: NSDictionary): boolean {
-      return FBSDKApplicationDelegate.sharedInstance().applicationDidFinishLaunchingWithOptions(application, launchOptions); // facebook login delegate
+      let gglDelegate = false;
+
+      try {
+        const errorRef = new interop.Reference();
+        GGLContext.sharedInstance().configureWithError(errorRef);
+
+        const signIn = GIDSignIn.sharedInstance();
+        gglDelegate = true;
+      } catch (error) {
+        console.log(error);
+      }
+
+      const fcbDelegate = FBSDKApplicationDelegate.sharedInstance().applicationDidFinishLaunchingWithOptions(application, launchOptions); // facebook login delegate
+
+      return gglDelegate || fcbDelegate;
     }
 
     applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation) {
-      return FBSDKApplicationDelegate.sharedInstance().applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation); // facebook login delegate
-    }
+      const fcbDelegate = FBSDKApplicationDelegate.sharedInstance().applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation); // facebook login delegate
+      const gglDelegate = GIDSignIn.sharedInstance().handleURLSourceApplicationAnnotation(url, sourceApplication, annotation); // google login delegate
 
-    applicationDidBecomeActive(application: UIApplication): void {
-      //Do something you want here
-    }
-
-    applicationWillTerminate(application: UIApplication): void {
-      //Do something you want here
-    }
-
-    applicationDidEnterBackground(application: UIApplication): void {
-      //Do something you want here
+      return fcbDelegate || gglDelegate;
     }
   }
 
   application.ios.delegate = MyDelegate;
-
 }
 ```
 
@@ -214,19 +243,23 @@ if (application.ios) {
             return _super !== null && _super.apply(this, arguments) || this;
         }
         MyDelegate.prototype.applicationDidFinishLaunchingWithOptions = function (application, launchOptions) {
-            return FBSDKApplicationDelegate.sharedInstance().applicationDidFinishLaunchingWithOptions(application, launchOptions); // facebook login delegate
+            var gglDelegate = false;
+            try {
+                var errorRef = new interop.Reference();
+                GGLContext.sharedInstance().configureWithError(errorRef);
+                var signIn = GIDSignIn.sharedInstance();
+                gglDelegate = true;
+            }
+            catch (error) {
+                console.log(error);
+            }
+            var fcbDelegate = FBSDKApplicationDelegate.sharedInstance().applicationDidFinishLaunchingWithOptions(application, launchOptions); // facebook login delegate
+            return gglDelegate || fcbDelegate;
         };
         MyDelegate.prototype.applicationOpenURLSourceApplicationAnnotation = function (application, url, sourceApplication, annotation) {
-            return FBSDKApplicationDelegate.sharedInstance().applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation); // facebook login delegate
-        };
-        MyDelegate.prototype.applicationDidBecomeActive = function (application) {
-            //Do something you want here
-        };
-        MyDelegate.prototype.applicationWillTerminate = function (application) {
-            //Do something you want here
-        };
-        MyDelegate.prototype.applicationDidEnterBackground = function (application) {
-            //Do something you want here
+            var fcbDelegate = FBSDKApplicationDelegate.sharedInstance().applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation); // facebook login delegate
+            var gglDelegate = GIDSignIn.sharedInstance().handleURLSourceApplicationAnnotation(url, sourceApplication, annotation); // google login delegate
+            return fcbDelegate || gglDelegate;
         };
         return MyDelegate;
     }(UIResponder));
