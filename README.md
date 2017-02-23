@@ -292,7 +292,7 @@ if (Application.android) {
         var result = SocialLogin.init({
             activity: activity
         });
-    });
+    };
 }
 ```
 
