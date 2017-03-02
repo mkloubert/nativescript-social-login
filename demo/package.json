@@ -13,7 +13,6 @@
     }
   },
   "dependencies": {
-    "nativescript-dev-typescript": "^0.3.2",
     "nativescript-social-login": "file:..\\plugin",
     "tns-core-modules": "2.4.4",
     "tns-platform-declarations": "^2.4.4"
@@ -24,6 +23,7 @@
     "babel-types": "6.21.0",
     "babylon": "6.15.0",
     "lazy": "1.0.11",
-    "nativescript-dev-android-snapshot": "^0.*.*"
+    "nativescript-dev-android-snapshot": "^0.*.*",
+    "nativescript-dev-typescript": "^0.3.2"
   }
 }
