@@ -135,7 +135,7 @@ dependencies {
 }
 ```
 
-### Setup Android Google Sign in
+### Setup Android Google Sign in for Debug Builds
 1. You need the *SHA1* value associated with the `debug.keystore` in your local android setup on your machine. For example, the following command is what you might run on a Windows machine:
 ``` shell
 keytool -list -v 
@@ -144,7 +144,7 @@ keytool -list -v
 -storepass android 
 -keypass android
 ```
-The path value obviously will change to your local path on your machine. The android debug builds are signed with this default `debug.keystore` located on your machine. So when you run the debug build on a device Google will allow the authentication with the running .apk since it has the SHA1 for the debug.keystore the debug app is built with.
+The path will change according to the path on your machine. The android debug builds are signed with this default `debug.keystore` located on your machine. So when you run the debug build on a device Google will allow the authentication with the running .apk since it has the SHA1 for the debug.keystore the debug app is built with.
 
 2. Create an app [here](https://developers.google.com/mobile/add?platform=android&cntapi=signin&cntapp=Default%20Demo%20App&cntpkg=com.google.samples.quickstart.signin&cnturl=https:%2F%2Fdevelopers.google.com%2Fidentity%2Fsign-in%2Fandroid%2Fstart%3Fconfigured%3Dtrue&cntlbl=Continue%20with%20Try%20Sign-In) on Google Developer site. 
     - Enter the App name. This can be anything but it will display to the user who is authenticating.
