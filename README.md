@@ -309,7 +309,7 @@ import Application = require("application");
 import SocialLogin = require("nativescript-social-login");
 
 if (Application.android) {
-    Applicationn.android.on(Applicationn.AndroidApplication.activityCreatedEvent, (event) => {
+    Application.android.on(Application.AndroidApplication.activityCreatedEvent, (event) => {
         let result = SocialLogin.init({
             activity: event.activity,
         });
