@@ -38,3 +38,7 @@ dependencies {
         transitive = true
     }
 }
+
+project.ext {
+     googlePlayServicesVersion = "10.2.6"
+ }
