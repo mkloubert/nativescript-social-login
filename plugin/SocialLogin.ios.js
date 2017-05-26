@@ -96,8 +96,10 @@ function initEnvironment(cfg,
       googleSignIn.shouldFetchBasicProfile = cfg.google.shouldFetchBasicProfile;
       googleSignIn.scopes = cfg.google.scopes || [ "profile", "email" ];
 
-      if (cfg.google.serverClientId) {
-        googleSignIn.clientID = cfg.google.serverClientId;
+      // Setting 'googleSignIn.serverClientID' forces retrieval of an offline auth code in iOS.
+      // Set it only if that's what the user is expecting to retrieve.
+      if (cfg.google.serverClientId && cfg.google.isRequestAuthCode) {
+        googleSignIn.serverClientID = cfg.google.serverClientId;
       }
 
       googleInit = true;
@@ -296,7 +298,9 @@ function createSignInDelegate() {
                   // familyName: user.profile.familyName,
                   displayName: user.profile.name,
                   // givenName: user.profile.givenName,
-                  authCode: user.authentication.idToken, // Safe to send to the server
+                  authCode: user.serverAuthCode
+                    ? user.serverAuthCode
+                    : user.authentication.idToken,  // Safe to send to the server
                   id: user.userID,                  // For client-side use only!
               };
 
