@@ -135,6 +135,16 @@ export interface ILoginResult {
      * The display name.
      */
     displayName?: string;
+
+    /**
+     * First name of the user.
+     */
+    firstName?: string;
+
+    /**
+     * Last name of the user.
+     */
+    lastName?: string;
     
     /**
      * Gets the error (if defined).

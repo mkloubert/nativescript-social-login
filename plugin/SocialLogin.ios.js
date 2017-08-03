@@ -177,6 +177,8 @@ function loginWithFacebook(callback) {
       var err;
       var usrToken;
       var displayName;
+      var firstName;
+      var lastName;
       var photo;
       var id;
 
@@ -188,6 +190,14 @@ function loginWithFacebook(callback) {
 
         // name
         displayName = theResult.objectForKey("name");
+
+        if (theResult.objectForKey("first_name")) {
+          firstName = theResult.objectForKey("first_name");
+        }
+
+        if (theResult.objectForKey("last_name")) {
+          lastName = theResult.objectForKey("last_name");
+        }
 
         // photo
         if (
@@ -209,6 +219,8 @@ function loginWithFacebook(callback) {
           authToken: authToken,
           code: code,
           displayName: displayName,
+          firstName: firstName,
+          lastName: lastName,
           error: err,
           id: id,
           photo: photo,
@@ -227,7 +239,7 @@ function loginWithFacebook(callback) {
 
     fbRequest.tokenString = authToken;
 
-    fbRequest.initWithGraphPathParameters("me", {"fields": "id,about,birthday,email,gender,name,picture"})
+    fbRequest.initWithGraphPathParameters("me", {"fields": "id,about,birthday,email,gender,name,first_name,last_name,picture"})
       .startWithCompletionHandler(resultFn);
   };
 
@@ -295,22 +307,14 @@ function createSignInDelegate() {
           try {
               var resultUser = {
                   userToken: user.profile.email,
-                  // familyName: user.profile.familyName,
+                  firstName: user.profile.givenName,
+                  lastName: user.profile.familyName,
                   displayName: user.profile.name,
-                  // givenName: user.profile.givenName,
                   authCode: user.serverAuthCode
                     ? user.serverAuthCode
                     : user.authentication.idToken,  // Safe to send to the server
                   id: user.userID,                  // For client-side use only!
               };
-
-          //               authToken: authToken,
-          // code: code,
-          // displayName: displayName,
-          // error: err,
-          // id: id,
-          // photo: photo,
-          // userToken: usrToken,
 
               googleSuccessCallback(resultUser);
 

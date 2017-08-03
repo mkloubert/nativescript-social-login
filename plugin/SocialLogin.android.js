@@ -209,12 +209,14 @@ function initEnvironment(cfg,
                             loginResult.getAccessToken(),
                             new com.facebook.GraphRequest.GraphJSONObjectCallback({
                                 onCompleted: function(obj, resp) {
-                                    logMsg('onSuccess().onCompleted()', LOGTAG_FB_LOGIN_MGR);
+                                    logMsg('onSuccess().onCompleted()', LOGTAG_FB_LOGIN_MGR);                   
 
                                     var code = 0;
                                     var err;
                                     var usrToken;
                                     var displayName;
+                                    var firstName;
+                                    var lastName;
                                     var photo;
                                     var id;
 
@@ -232,6 +234,16 @@ function initEnvironment(cfg,
                                         // name
                                         if (obj.has("name")) {
                                             displayName = obj.getString("name");
+                                        }
+
+                                        // first name
+                                        if (obj.has("first_name")) {
+                                            firstName = obj.getString("first_name");
+                                        }
+
+                                        // last name
+                                        if (obj.has("last_name")) {
+                                            lastName = obj.getString("last_name");
                                         }
 
                                         // photo
@@ -252,6 +264,8 @@ function initEnvironment(cfg,
                                         error: err,
                                         userToken: usrToken,
                                         displayName: displayName,
+                                        firstName: firstName,
+                                        lastName: lastName,
                                         photo: photo,
                                         id: id
                                     });
@@ -260,7 +274,7 @@ function initEnvironment(cfg,
                         );
 
                         var params = new android.os.Bundle();
-                        params.putString("fields", "id,name,picture.type(large),email");
+                        params.putString("fields", "id,name,first_name,last_name,picture.type(large),email");
 
                         request.setParameters(params);
 
@@ -365,7 +379,9 @@ function initEnvironment(cfg,
                             resultCtx.authToken = account.getIdToken(); 
                             resultCtx.authCode = account.getServerAuthCode();
                             resultCtx.userToken = account.getEmail();
-                            resultCtx.displayName = account.getDisplayName();      
+                            resultCtx.displayName = account.getDisplayName(); 
+                            resultCtx.firstName = account.getGivenName();
+                            resultCtx.lastName = account.getFamilyName();     
                         }
                         else {
                             logMsg('NO SUCCESS!', LOGTAG_ON_ACTIVITY_RESULT);
