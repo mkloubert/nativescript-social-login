@@ -25,6 +25,13 @@
     "name": "Marcel Joachim Kloubert",
     "email": "marcel.kloubert@gmx.net"
   },
+  "contributors": [
+    {
+      "name": "Brad Martin",
+      "email": "bmartin@nstudio.io",
+      "url": "https://github.com/bradmartin"
+    }
+  ],
   "license": {
     "type": "MIT",
     "url": "https://github.com/mkloubert/nativescript-social-login/blob/master/LICENSE"
