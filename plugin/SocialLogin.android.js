@@ -144,7 +144,7 @@ function initEnvironment(cfg,
     _rcGoogleSignIn = 597965301;
     _rcFacebookSignIn = 64206;
 
-    var googleClientOptions;    
+    var googleClientOptions;
 
     _activity = cfg.activity ||
                 Application.android.foregroundActivity ||
@@ -182,7 +182,10 @@ function initEnvironment(cfg,
             var fbCallbackManager = com.facebook.CallbackManager.Factory.create();
 
             var fbLoginManager = com.facebook.login.LoginManager.getInstance();
-            fbLoginManager.logOut();
+
+            if (cfg.facebook.clearSession === true) {
+                fbLoginManager.logOut();
+            }
 
             _fbCallbackManager = fbCallbackManager;
             _fbLoginManager = fbLoginManager;

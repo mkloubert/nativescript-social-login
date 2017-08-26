@@ -334,6 +334,10 @@ interface ILoginConfiguration {
          * Initialize Facebook or not. Default: (true)
          */
         initialize?: boolean,
+        /**
+         * Should Logout current Facebook session or not. Default: (false)
+         */
+        clearSession?: boolean;
     }
 
     /**
@@ -472,6 +476,30 @@ SocialLogin.loginWithFacebook(
         console.log("authToken: " + result.authToken);
     }
 );
+```
+
+It is worth noting that for an Angular-based app, this callback should be wrapped within an `NgZone` to Angular handle updating the view properly when complete.
+
+```typescript
+import { Component, NgZone } from "angular/core";
+
+@Component({})
+class SigninComponent {
+    constructor(private ngZone: NgZone) {}
+
+    login() {
+        SocialLogin.loginWithFacebook((result) => {
+            this.ngZone.run(() => {
+                console.log("code: " + result.code);
+                console.log("error: " + result.error);
+                console.log("userToken: " + result.userToken);
+                console.log("displayName: " + result.displayName);
+                console.log("photo: " + result.photo);
+                console.log("authToken: " + result.authToken);
+            });
+        });
+    }
+}
 ```
 
 There is also a [great example](https://github.com/dgomezs/facebook-login) by [dgomezs](https://github.com/dgomezs) that shows how to configure your app for Facebook.

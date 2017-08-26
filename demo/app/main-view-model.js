@@ -53,7 +53,9 @@ function createViewModel() {
                 google: {
                     serverClientId: googleServerClientId
                 },
-                facebook: {}
+                facebook: {
+                    clearSession: false
+                }
             });
 
             viewModel.set("initResult", result);
