@@ -331,9 +331,13 @@ interface ILoginConfiguration {
      */
     facebook?: {
         /**
+         * Should Logout current Facebook session or not. Default: (false)
+         */
+        clearSession?: boolean;
+        /**
          * Initialize Facebook or not. Default: (true)
          */
-        initialize?: boolean,
+        initialize?: boolean;
     }
 
     /**
@@ -343,7 +347,7 @@ interface ILoginConfiguration {
         /**
          * Initialize Google or not. Default: (true)
          */
-        initialize?: boolean,
+        initialize?: boolean;
 
        /**
         * The server client ID for requesting server auth token.
