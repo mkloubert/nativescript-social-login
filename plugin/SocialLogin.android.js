@@ -183,7 +183,7 @@ function initEnvironment(cfg,
 
             var fbLoginManager = com.facebook.login.LoginManager.getInstance();
 
-            if (cfg.facebook.clearSession === true) {
+            if (!!cfg.facebook.clearSession) {
                 fbLoginManager.logOut();
             }
 
