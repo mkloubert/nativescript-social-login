@@ -31,6 +31,10 @@ export interface ILoginConfiguration {
          * Initialize Facebook or not. Default: (true)
          */
         initialize?: boolean;
+        /**
+         * Should Logout current Facebook session or not. Default: (false)
+         */
+        clearSession?: boolean;
     };
     /**
      * Google specific configuration.

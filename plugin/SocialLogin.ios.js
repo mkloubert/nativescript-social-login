@@ -77,7 +77,10 @@ function initEnvironment(cfg,
 
       facebookLoginManager = FBSDKLoginManager.alloc().init();
       if (facebookLoginManager) {
-          facebookLoginManager.logOut();
+
+          if (cfg.facebook.clearSession === true) {
+              facebookLoginManager.logOut();
+          }
           if (!!cfg.facebook.loginBehavior) {
               facebookLoginManager.loginBehavior = cfg.facebook.loginBehavior;
           }
