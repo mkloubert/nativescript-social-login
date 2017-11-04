@@ -1,7 +1,7 @@
 {
   "name": "nativescript-social-login",
   "description": "NativeScript plugin for social (token based) log-ins.",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "nativescript": {
     "platforms": {
       "android": "1.1.0",
@@ -47,6 +47,11 @@
     {
       "name": "Fábio Araújo",
       "url": "https://github.com/fmsaraujo"
+    },
+    {
+      "name": "Jeremiah Ogbomo",
+      "email": "jeremiahogbomo@gmail.com",
+      "url": "https://github.com/jogboms"
     }
   ],
   "license": {
