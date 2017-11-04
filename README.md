@@ -513,3 +513,12 @@ SocialLogin.addLogger(function(msg: any, tag: string) {
     console.log('[nativescript-social-login]: (' + tag + '): ' + msg);
 });
 ```
+
+## Contributors
+
+* [Fábio Araújo](https://github.com/fmsaraujo)
+* [Brad Martin](https://github.com/bradmartin)
+* [Jeremiah Ogbomo](https://github.com/jogboms)
+* [Shripal Soni](http://www.shripalsoni.com)
+* [Andrii Votiakov](https://github.com/votiakov)
+* [Felipe Waku](https://github.com/felipewaku)
