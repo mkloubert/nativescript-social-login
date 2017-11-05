@@ -73,7 +73,7 @@ inside your app project to install the module.
 </manifest>
 ```
 
-##### Acitivities
+##### Facebook App ID
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -84,11 +84,6 @@ inside your app project to install the module.
         <!-- ... -->
 
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id" />
-
-        <activity android:name="com.facebook.FacebookActivity"
-                  android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
-                  android:label="@string/app_name" />
 
         <!-- ... -->
     </application>
@@ -106,43 +101,10 @@ inside your app project to install the module.
 </resources>
 ```
 
-#### app.gradle
-
-```gradle
-buildscript {
-    repositories {
-        jcenter()
-        mavenLocal()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
-        classpath 'com.google.gms:google-services:3.0.0'
-    }
-}
-
-repositories {
-    mavenCentral()
-    maven { url 'https://maven.fabric.io/public' }
-}
-
-dependencies {
-    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
-    compile 'com.google.android.gms:play-services-auth:8.4.0'
-
-    compile('com.twitter.sdk.android:twitter:1.13.2@aar') {
-        transitive = true
-    }
-}
-```
-
 ### Setup Android Google Sign in for Debug Builds
 1. You need the *SHA1* value associated with the `debug.keystore` in your local android setup on your machine. For example, the following command is what you might run on a Windows machine:
 ``` shell
-keytool -list -v 
--keystore C:/users/brad.martin/.android/debug.keystore 
--alias androiddebugkey 
--storepass android 
--keypass android
+keytool -list -v -keystore C:/users/brad.martin/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
 ```
 The path will change according to the path on your machine. The android debug builds are signed with this default `debug.keystore` located on your machine. So when you run the debug build on a device Google will allow the authentication with the running .apk since it has the SHA1 for the debug.keystore the debug app is built with.
 
@@ -199,13 +161,6 @@ Add the following to your Info.plist file located in app/App_Resources/iOS
     <string>{YOUR_FACEBOOK_APP_ID_HERE}</string>
     <key>FacebookDisplayName</key>
     <string>FacebookLoginDemo</string>
-    <key>LSApplicationQueriesSchemes</key>
-    <array>
-        <string>fbauth2</string>
-        <string>fbapi</string>
-        <string>fb-messenger-api</string>
-        <string>fbshareextension</string>
-    </array>
     <!-- FACEBOOK END -->
 
 ```
