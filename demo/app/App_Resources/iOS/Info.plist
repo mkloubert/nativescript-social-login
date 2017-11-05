@@ -112,13 +112,6 @@
 	<string>711677658998487</string>
   <key>FacebookDisplayName</key>
   <string>Cheefo nativescript test</string>
-  <key>LSApplicationQueriesSchemes</key>
-  <array>
-      <string>fbauth2</string>
-      <string>fbapi</string>
-      <string>fb-messenger-api</string>
-      <string>fbshareextension</string>
-  </array>
 	<!-- FACEBOOK END -->
 
 </dict>

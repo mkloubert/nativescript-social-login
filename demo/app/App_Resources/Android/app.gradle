@@ -5,40 +5,19 @@
 //	compile 'com.android.support:recyclerview-v7:+'
 //}
 
-android {  
-  defaultConfig {  
-    generatedDensities = []  
-  }  
-  aaptOptions {  
-    additionalParameters "--no-version-vectors"  
-  }  
+android {
+	defaultConfig {
+		generatedDensities = []
+		applicationId = "org.nativescript.NativescriptSocialLoginDemo"
+	}
+    defaultConfig {  
+        generatedDensities = []  
+    }  
+    aaptOptions {  
+        additionalParameters "--no-version-vectors"  
+    }
+
+    // project.ext {
+    //     googlePlayServicesVersion = "10.2.6"
+    // }
 } 
-
-buildscript {
-    repositories {
-        jcenter()
-        mavenLocal()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
-        classpath 'com.google.gms:google-services:3.0.0'
-    }
-}
-
-repositories {
-    mavenCentral()
-    maven { url 'https://maven.fabric.io/public' }
-}
-
-dependencies {
-    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
-    compile 'com.google.android.gms:play-services-auth:8.4.0'
-
-    compile('com.twitter.sdk.android:twitter:1.13.2@aar') {
-        transitive = true
-    }
-}
-
-project.ext {
-     googlePlayServicesVersion = "10.2.6"
- }
