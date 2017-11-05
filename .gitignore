@@ -1,3 +1,4 @@
+/demo/hooks
 /demo/node_modules
 /demo/platforms
 /pushall.sh
@@ -5,6 +6,7 @@
 /plugin/ios.d.ts
 /demo/app/*.map
 /plugin/*.map
+/plugin/node_modules
+/plugin/hooks
 /demo/app/SocialLogin/*.map
 /demo/.vscode
-/demo/hooks

@@ -1,3 +1,4 @@
+"use strict";
 // The MIT License (MIT)
 // 
 // Copyright (c) Marcel Joachim Kloubert <marcel.kloubert@gmx.net>
@@ -19,13 +20,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-"use strict";
-var TypeUtils = require("utils/types");
-var SocialLogin = require("./SocialLogin");
+Object.defineProperty(exports, "__esModule", { value: true });
+// import Application = require("application");
+// import { application as Application } from "tns-core-modules/application/application.d";
+var types_1 = require("utils/types");
+var SocialLogin_1 = require("./SocialLogin");
 var _loggers = [];
 /**
  * List of login result types.
  */
+var LoginResultType;
 (function (LoginResultType) {
     /**
      * Success
@@ -43,15 +47,14 @@ var _loggers = [];
      * Failed
      */
     LoginResultType[LoginResultType["Failed"] = 2] = "Failed";
-})(exports.LoginResultType || (exports.LoginResultType = {}));
-var LoginResultType = exports.LoginResultType;
+})(LoginResultType = exports.LoginResultType || (exports.LoginResultType = {}));
 /**
  * Adds a logger callback.
  *
  * @param {Function} callback The callback that receives the log message.
  */
 function addLogger(callback) {
-    if (!TypeUtils.isNullOrUndefined(callback)) {
+    if (!types_1.isNullOrUndefined(callback)) {
         _loggers.push(callback);
     }
 }
@@ -62,9 +65,7 @@ exports.addLogger = addLogger;
  * @param {ILoginConfiguration} [config] The configuration to use.
  */
 function init(config) {
-    return SocialLogin.initEnvironment(config, function () {
-        return _loggers;
-    });
+    return SocialLogin_1.initEnvironment(config, function () { return _loggers; });
 }
 exports.init = init;
 /**
@@ -76,7 +77,7 @@ exports.init = init;
  * @throws Provider is (currently) NOT supported.
  */
 function login(provider, callback) {
-    SocialLogin.loginWithProvider(provider.toLowerCase().trim(), callback);
+    SocialLogin_1.loginWithProvider(provider.toLowerCase().trim(), callback);
 }
 exports.login = login;
 /**
@@ -106,4 +107,3 @@ function loginWithTwitter(callback) {
     login("twitter", callback);
 }
 exports.loginWithTwitter = loginWithTwitter;
-//# sourceMappingURL=index.js.map

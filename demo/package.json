@@ -6,24 +6,23 @@
   "nativescript": {
     "id": "org.nativescript.NativescriptSocialLoginDemo",
     "tns-android": {
-      "version": "2.0.0"
+      "version": "3.3.0"
     },
     "tns-ios": {
-      "version": "2.4.0"
+      "version": "3.3.0"
     }
   },
   "dependencies": {
-    "nativescript-social-login": "file:..\\plugin",
-    "tns-core-modules": "2.4.4",
-    "tns-platform-declarations": "^2.4.4"
+    "nativescript-social-login": "file:///Users/apple/Desktop/NS_PLAY/nativescript-social-login/plugin",
+    "tns-core-modules": "3.2.0",
+    "tns-platform-declarations": "^3.3.0"
   },
   "devDependencies": {
-    "typescript": "^2.1.4",
-    "babel-traverse": "6.21.0",
-    "babel-types": "6.21.0",
-    "babylon": "6.15.0",
+    "babel-traverse": "6.25.0",
+    "babel-types": "6.25.0",
+    "babylon": "6.17.3",
     "lazy": "1.0.11",
-    "nativescript-dev-android-snapshot": "^0.*.*",
-    "nativescript-dev-typescript": "^0.3.2"
+    "nativescript-dev-typescript": "~0.5.1",
+    "typescript": "~2.4.0"
   }
 }

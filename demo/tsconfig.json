@@ -4,13 +4,25 @@
         "target": "es5",
         "experimentalDecorators": true,
         "lib": [
-            "es2016"
+            "es2016",
+            "es6",
+            "dom"
         ],
         "emitDecoratorMetadata": true,
         "noEmitHelpers": true,
-        "noEmitOnError": true
+        "skipLibCheck": false,
+        "noEmitOnError": true,
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "./node_modules/tns-core-modules/*",
+                "./node_modules/*"
+            ]
+        }
     },
     "exclude": [
+        "lib",
+        "hooks",
         "node_modules",
         "platforms"
     ]

@@ -77,8 +77,7 @@ function logResult(resultCtx, tag) {
     }
 }
 
-function initEnvironment(cfg,
-    getLoggers) {
+function initEnvironment(cfg, getLoggers) {
 
     _getLoggers = getLoggers;
 

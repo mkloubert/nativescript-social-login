@@ -20,11 +20,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-import Application = require("application");
-import TypeUtils = require("utils/types");
-var SocialLogin = require("./SocialLogin");
+import { isNullOrUndefined } from "utils/types";
+import { initEnvironment, loginWithProvider } from "./SocialLogin";
 
-var _loggers = [];
+const _loggers = [];
 
 /**
  * Stores data of the result of an initialization.
@@ -75,10 +74,10 @@ export interface ILoginConfiguration {
          * Initialize Google or not. Default: (true)
          */
         initialize?: boolean,
-       
-       /**
-        * The server client ID for requesting server auth token.
-        */
+
+        /**
+         * The server client ID for requesting server auth token.
+         */
         serverClientId?: string;
 
         /**
@@ -149,7 +148,7 @@ export interface ILoginResult {
      * Last name of the user.
      */
     lastName?: string;
-    
+
     /**
      * Gets the error (if defined).
      */
@@ -207,7 +206,7 @@ export enum LoginResultType {
  * @param {Function} callback The callback that receives the log message.
  */
 export function addLogger(callback: (msg: any, tag: string) => void) {
-    if (!TypeUtils.isNullOrUndefined(callback)) {
+    if (!isNullOrUndefined(callback)) {
         _loggers.push(callback);
     }
 }
@@ -218,10 +217,7 @@ export function addLogger(callback: (msg: any, tag: string) => void) {
  * @param {ILoginConfiguration} [config] The configuration to use.
  */
 export function init(config?: ILoginConfiguration): IInitializationResult {
-    return SocialLogin.initEnvironment(config,
-                                       function() {
-                                           return _loggers;
-                                       });
+    return initEnvironment(config, () => _loggers);
 }
 
 /**
@@ -232,11 +228,8 @@ export function init(config?: ILoginConfiguration): IInitializationResult {
  * 
  * @throws Provider is (currently) NOT supported.
  */
-export function login(provider: string,
-                      callback: (result: ILoginResult) => void) {
-
-    SocialLogin.loginWithProvider(provider.toLowerCase().trim(),
-                                  callback);
+export function login(provider: string, callback: (result: ILoginResult) => void) {
+    loginWithProvider(provider.toLowerCase().trim(), callback);
 }
 
 /**
