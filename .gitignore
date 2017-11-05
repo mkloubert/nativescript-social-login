@@ -10,3 +10,4 @@
 /plugin/hooks
 /demo/app/SocialLogin/*.map
 /demo/.vscode
+*.log
