@@ -5,10 +5,10 @@
   "repository": "<fill-your-repository-here>",
   "nativescript": {
     "id": "org.nativescript.NativescriptSocialLoginDemo",
-    "tns-android": {
+    "tns-ios": {
       "version": "3.3.0"
     },
-    "tns-ios": {
+    "tns-android": {
       "version": "3.3.0"
     }
   },
