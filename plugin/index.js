@@ -21,8 +21,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 Object.defineProperty(exports, "__esModule", { value: true });
-// import Application = require("application");
-// import { application as Application } from "tns-core-modules/application/application.d";
 var types_1 = require("utils/types");
 var SocialLogin_1 = require("./SocialLogin");
 var _loggers = [];
