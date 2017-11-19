@@ -77,15 +77,15 @@ export interface IConfig {
         /**
          * Initialize Facebook or not. Default: (true)
          */
-        initialize: boolean;
+        initialize?: boolean;
         /**
          * Should Logout current Facebook session or not. Default: (false)
          */
-        clearSession: boolean;
+        clearSession?: boolean;
         /**
          * iOS only
          */
-        loginBehavior: any;
+        loginBehavior?: any;
     };
     /**
      * Google specific configuration.
@@ -94,24 +94,24 @@ export interface IConfig {
         /**
          * Initialize Google or not. Default: (true)
          */
-        initialize: boolean;
+        initialize?: boolean;
         /**
          * The server client ID for requesting server auth token.
          */
-        serverClientId: string;
+        serverClientId?: string;
         /**
          * If true, it will request for offline auth code which server can use for fetching or refreshing auth tokens. It will be set in authCode property of result object.
          * If false (default), it will request for token id. it will be set in authToken property of result object.
          */
-        isRequestAuthCode: boolean;
+        isRequestAuthCode?: boolean;
         /**
          * iOS only. Default to true
          */
-        shouldFetchBasicProfile: boolean;
+        shouldFetchBasicProfile?: boolean;
         /**
          * iOS only
          */
-        scopes: string[];
+        scopes?: string[];
     };
     /**
      * Fallback action for the result of the underlying activity.
@@ -124,15 +124,15 @@ export interface IConfig {
         /**
          * Initialize Twitter or not. Default: (true)
          */
-        initialize: boolean;
+        initialize?: boolean;
         /**
          * The consumer key.
          */
-        key: string;
+        key?: string;
         /**
          * The consumer secret.
          */
-        secret: string;
+        secret?: string;
     };
 }
 export declare type ILoginConfiguration = Partial<IConfig>;

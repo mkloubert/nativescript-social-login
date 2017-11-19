@@ -139,9 +139,6 @@ var SocialLogin = (function (_super) {
             authToken = result.token.tokenString;
             var fbRequest = FBSDKGraphRequest.alloc();
             fbRequest.initWithGraphPathParametersTokenStringVersionHTTPMethod("me", { "fields": "id,about,birthday,email,gender,name,first_name,last_name,picture" }, authToken, null, "GET").startWithCompletionHandler(resultFn);
-            // fbRequest.tokenString = authToken;
-            // fbRequest.initWithGraphPathParameters("me", { "fields": "id,about,birthday,email,gender,name,first_name,last_name,picture" })
-            // 	.startWithCompletionHandler(resultFn);
         };
         if (!!callback) {
             this._facebookCallbackManager = function (result, error) {
