@@ -6,6 +6,7 @@
 /plugin/ios.d.ts
 /demo/app/*.map
 /plugin/*.map
+/plugin/tslint.json
 /plugin/*.js
 /plugin/node_modules
 /plugin/hooks
