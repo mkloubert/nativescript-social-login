@@ -1,5 +1,6 @@
 *.map
-index.ts
+*.ts
+!*.d.ts
 tsconfig.json
 references.d.ts
 hooks
