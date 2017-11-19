@@ -2,6 +2,8 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
+        "allowJs": false,
+        "declaration": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "noEmitHelpers": true,
