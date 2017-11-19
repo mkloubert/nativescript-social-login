@@ -1,18 +1,18 @@
 "use strict";
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) Marcel Joachim Kloubert <marcel.kloubert@gmx.net>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
 // deal in the Software without restriction, including without limitation the
 // rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 // sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,29 +23,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var types_1 = require("utils/types");
 var SocialLogin_1 = require("./SocialLogin");
+var Login;
 var _loggers = [];
-/**
- * List of login result types.
- */
-var LoginResultType;
-(function (LoginResultType) {
-    /**
-     * Success
-     */
-    LoginResultType[LoginResultType["Success"] = 0] = "Success";
-    /**
-     * "Unhandled" exception
-     */
-    LoginResultType[LoginResultType["Exception"] = -1] = "Exception";
-    /**
-     * Cancelled
-     */
-    LoginResultType[LoginResultType["Cancelled"] = 1] = "Cancelled";
-    /**
-     * Failed
-     */
-    LoginResultType[LoginResultType["Failed"] = 2] = "Failed";
-})(LoginResultType = exports.LoginResultType || (exports.LoginResultType = {}));
 /**
  * Adds a logger callback.
  *
@@ -63,7 +42,8 @@ exports.addLogger = addLogger;
  * @param {ILoginConfiguration} [config] The configuration to use.
  */
 function init(config) {
-    return SocialLogin_1.initEnvironment(config, function () { return _loggers; });
+    Login = new SocialLogin_1.SocialLogin();
+    return Login.initEnvironment(config, function () { return _loggers; });
 }
 exports.init = init;
 /**
@@ -75,7 +55,7 @@ exports.init = init;
  * @throws Provider is (currently) NOT supported.
  */
 function login(provider, callback) {
-    SocialLogin_1.loginWithProvider(provider.toLowerCase().trim(), callback);
+    Login.loginWithProvider(provider.toLowerCase().trim(), callback);
 }
 exports.login = login;
 /**
@@ -105,3 +85,6 @@ function loginWithTwitter(callback) {
     login("twitter", callback);
 }
 exports.loginWithTwitter = loginWithTwitter;
+// Export neccessary Interfaces
+var SocialLogin_common_1 = require("./SocialLogin-common");
+exports.LoginResultType = SocialLogin_common_1.LoginResultType;
