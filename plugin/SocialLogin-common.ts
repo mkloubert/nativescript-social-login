@@ -207,7 +207,7 @@ export abstract class Social {
     protected _getLoggers: () => ILogger[];
     protected _loginCallback: (result: Partial<ILoginResult>) => void;
     protected defaultConfig: IConfig = {
-        activity: isAndroid ? Android.foregroundActivity || Android.startActivity : null,
+        activity: void 0,
         google: {
             initialize: true,
             isRequestAuthCode: false,
@@ -259,6 +259,10 @@ export abstract class Social {
 
     initEnvironment(config: ILoginConfiguration = {}, getLoggers: () => ILogger[]): IInitializationResult {
         this._getLoggers = getLoggers;
+
+        if (isNullOrUndefined(config.activity) && isAndroid) {
+            config.activity = Android.foregroundActivity || Android.startActivity;
+        }
 
         this.Config = merge(this.defaultConfig, config);
 
