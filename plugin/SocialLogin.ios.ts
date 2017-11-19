@@ -176,7 +176,7 @@ export class SocialLogin extends Social {
 		};
 
 		if (!!callback) {
-			this._facebookCallbackManager = function (result, error) {
+			this._facebookCallbackManager = (result, error) => {
 				if (error) {
 					failCallback(error);
 					return;

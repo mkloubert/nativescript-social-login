@@ -275,7 +275,7 @@ export class SocialLogin extends Social {
             };
 
             this._fbLoginManager.registerCallback(this._fbCallbackManager, new com.facebook.FacebookCallback({
-                onSuccess(loginResult) {
+                onSuccess: loginResult => {
                     this.logMsg("onSuccess()", LOGTAG_FB_LOGIN_MGR);
 
                     let authToken;
@@ -285,7 +285,7 @@ export class SocialLogin extends Social {
                         const request = com.facebook.GraphRequest.newMeRequest(
                             loginResult.getAccessToken(),
                             new com.facebook.GraphRequest.GraphJSONObjectCallback({
-                                onCompleted(obj, resp) {
+                                onCompleted: (obj, resp) => {
                                     this.logMsg("onSuccess().onCompleted()", LOGTAG_FB_LOGIN_MGR);
 
                                     let code = LoginResultType.Success, error, userToken, displayName, firstName, lastName, photo, id;
@@ -360,7 +360,7 @@ export class SocialLogin extends Social {
                     }
                 },
 
-                onCancel() {
+                onCancel: () => {
                     this.logMsg("onCancel()", LOGTAG_FB_LOGIN_MGR);
 
                     invokeLoginCallbackForFacebook({
@@ -368,7 +368,7 @@ export class SocialLogin extends Social {
                     });
                 },
 
-                onError(e) {
+                onError: e => {
                     this.logMsg("onError()", LOGTAG_FB_LOGIN_MGR);
 
                     invokeLoginCallbackForFacebook({

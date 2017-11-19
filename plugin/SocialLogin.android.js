@@ -242,13 +242,13 @@ var SocialLogin = (function (_super) {
             };
             this._fbLoginManager.registerCallback(this._fbCallbackManager, new com.facebook.FacebookCallback({
                 onSuccess: function (loginResult) {
-                    this.logMsg("onSuccess()", LOGTAG_FB_LOGIN_MGR);
+                    _this.logMsg("onSuccess()", LOGTAG_FB_LOGIN_MGR);
                     var authToken;
                     try {
                         authToken = loginResult.getAccessToken().getToken();
                         var request = com.facebook.GraphRequest.newMeRequest(loginResult.getAccessToken(), new com.facebook.GraphRequest.GraphJSONObjectCallback({
                             onCompleted: function (obj, resp) {
-                                this.logMsg("onSuccess().onCompleted()", LOGTAG_FB_LOGIN_MGR);
+                                _this.logMsg("onSuccess().onCompleted()", LOGTAG_FB_LOGIN_MGR);
                                 var code = SocialLogin_common_1.LoginResultType.Success, error, userToken, displayName, firstName, lastName, photo, id;
                                 try {
                                     // ID
@@ -277,7 +277,7 @@ var SocialLogin = (function (_super) {
                                     }
                                 }
                                 catch (e) {
-                                    this.logMsg("[ERROR] onSuccess().onCompleted(): " + e, LOGTAG_FB_LOGIN_MGR);
+                                    _this.logMsg("[ERROR] onSuccess().onCompleted(): " + e, LOGTAG_FB_LOGIN_MGR);
                                     code = SocialLogin_common_1.LoginResultType.Exception;
                                     error = e;
                                 }
@@ -297,11 +297,11 @@ var SocialLogin = (function (_super) {
                         var params = new android.os.Bundle();
                         params.putString("fields", "id,name,first_name,last_name,picture.type(large),email");
                         request.setParameters(params);
-                        this.logMsg("onSuccess(): Executing request...", LOGTAG_FB_LOGIN_MGR);
+                        _this.logMsg("onSuccess(): Executing request...", LOGTAG_FB_LOGIN_MGR);
                         request.executeAsync();
                     }
                     catch (e) {
-                        this.logMsg("[ERROR] onSuccess(): " + e, LOGTAG_FB_LOGIN_MGR);
+                        _this.logMsg("[ERROR] onSuccess(): " + e, LOGTAG_FB_LOGIN_MGR);
                         invokeLoginCallbackForFacebook_1({
                             authToken: authToken,
                             code: SocialLogin_common_1.LoginResultType.Exception,
@@ -310,13 +310,13 @@ var SocialLogin = (function (_super) {
                     }
                 },
                 onCancel: function () {
-                    this.logMsg("onCancel()", LOGTAG_FB_LOGIN_MGR);
+                    _this.logMsg("onCancel()", LOGTAG_FB_LOGIN_MGR);
                     invokeLoginCallbackForFacebook_1({
                         code: SocialLogin_common_1.LoginResultType.Cancelled
                     });
                 },
                 onError: function (e) {
-                    this.logMsg("onError()", LOGTAG_FB_LOGIN_MGR);
+                    _this.logMsg("onError()", LOGTAG_FB_LOGIN_MGR);
                     invokeLoginCallbackForFacebook_1({
                         code: SocialLogin_common_1.LoginResultType.Failed,
                         error: e.getMessage(),
