@@ -19,5 +19,6 @@ android {
 
     // project.ext {
     //     googlePlayServicesVersion = "10.2.6"
+    //     facebookSDKVersion = "4.2.2"
     // }
 } 

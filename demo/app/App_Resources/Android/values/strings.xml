@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="facebook_app_id">{YOUR_FACEBOOK_ID_HERE}</string>
+    <string name="fb_login_protocol_scheme">fb{YOUR_FACEBOOK_ID_HERE}</string>
     <string name="app_name">nativescript-social-login</string>
     <string name="title_activity_kimera">nativescript-social-login</string>
 </resources>
