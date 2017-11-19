@@ -66,27 +66,7 @@ inside your app project to install the module.
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!-- ... -->
-</manifest>
-```
-
-##### Facebook App ID
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- ... -->
-
-    <application>
-        <!-- ... -->
-
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id" />
-
-        <!-- ... -->
-    </application>
 
     <!-- ... -->
 </manifest>
@@ -97,7 +77,8 @@ inside your app project to install the module.
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="facebook_app_id">YOUR_FACEBOOK_APP_ID</string>
+    <string name="facebook_app_id">{{ YOUR_FACEBOOK_APP_ID }}</string>
+    <string name="fb_login_protocol_scheme">fb{{ YOUR_FACEBOOK_APP_ID }}</string>
 </resources>
 ```
 
@@ -279,7 +260,7 @@ interface ILoginConfiguration {
     /**
      * The underlying custom activity to use.
      */
-    activity?: any;
+    activity?: android.app.Activity;
 
     /**
      * Facebook specific configuration.
@@ -367,7 +348,7 @@ interface ILoginResult {
     /**
      * Gets the result code.
      */
-    code: number;
+    code: LoginResultType;
 
     /**
      * The display name.
