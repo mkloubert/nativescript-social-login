@@ -1,0 +1,90 @@
+{
+    "rules": {
+        "no-unused-expression": true,
+        "no-duplicate-variable": true,
+        "no-unused-variable": true,
+        "curly": true,
+        "class-name": true,
+        "semicolon": [
+            true
+        ],
+        "triple-equals": [
+            true,
+            "allow-null-check"
+        ],
+        "no-console": [
+            true,
+            "debug",
+            "info",
+            "time",
+            "timeEnd",
+            "trace"
+        ],
+        "no-construct": true,
+        "no-debugger": true,
+        "no-empty": false,
+        "no-eval": true,
+        "no-null-keyword": false,
+        "no-shadowed-variable": true,
+        "no-string-literal": false,
+        "no-switch-case-fall-through": true,
+        "no-var-keyword": true,
+        "radix": false,
+        "switch-default": true,
+        "indent": [
+            false
+        ],
+        "no-require-imports": false,
+        "no-trailing-whitespace": true,
+        "object-literal-sort-keys": false,
+        "align": false,
+        "eofline": true,
+        "trailing-comma": [
+            true,
+            {
+                "multiline": false,
+                "singleline": "never"
+            }
+        ],
+        "comment-format": [
+            true,
+            "check-space"
+        ],
+        "interface-name": false,
+        "jsdoc-format": true,
+        "no-consecutive-blank-lines": [
+            true,
+            2
+        ],
+        "one-line": [
+            true,
+            "check-open-brace",
+            "check-catch",
+            "check-else",
+            "check-finally",
+            "check-whitespace"
+        ],
+        "quotemark": [
+            true,
+            "double",
+            "avoid-escape"
+        ],
+        "variable-name": [
+            true,
+            "check-format",
+            "allow-snake-case",
+            "allow-leading-underscore",
+            "allow-pascal-case",
+            "ban-keywords"
+        ],
+        "whitespace": [
+            true,
+            "check-branch",
+            "check-decl",
+            "check-module",
+            "check-operator",
+            "check-separator",
+            "check-type"
+        ]
+    }
+}
