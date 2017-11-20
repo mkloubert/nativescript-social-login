@@ -21,6 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 Object.defineProperty(exports, "__esModule", { value: true });
+var application_1 = require("tns-core-modules/application/application");
 var types_1 = require("tns-core-modules/utils/types");
 var SocialLogin_common_1 = require("./SocialLogin-common");
 var LOGTAG_FB_LOGIN_MGR = "com.facebook.login.LoginManager";
@@ -42,6 +43,9 @@ var SocialLogin = (function (_super) {
     SocialLogin.prototype.init = function (result) {
         var _this = this;
         this.logMsg("activity: " + this.Config.activity, SocialLogin_common_1.LOGTAG_INIT_ENV);
+        if (types_1.isNullOrUndefined(this.Config.activity)) {
+            this.Config.activity = application_1.android.foregroundActivity || application_1.android.startActivity;
+        }
         // Google
         if (this.Config.google.initialize) {
             result = this.initGoogle(result);

@@ -193,10 +193,8 @@ export enum LoginResultType {
     Failed = -2,
 }
 
-import { android as Android } from "tns-core-modules/application/application";
 import { isNullOrUndefined } from "tns-core-modules/utils/types";
 import { merge } from "./utils";
-import { isAndroid } from "tns-core-modules/platform/platform";
 
 export const LOGTAG_INIT_ENV = "initEnvironment()";
 export const LOGTAG_LOGIN_WITH_FB = "loginWithFacebook()";
@@ -259,10 +257,6 @@ export abstract class Social {
 
     initEnvironment(config: ILoginConfiguration = {}, getLoggers: () => ILogger[]): IInitializationResult {
         this._getLoggers = getLoggers;
-
-        if (isNullOrUndefined(config.activity) && isAndroid) {
-            config.activity = Android.foregroundActivity || Android.startActivity;
-        }
 
         this.Config = merge(this.defaultConfig, config);
 

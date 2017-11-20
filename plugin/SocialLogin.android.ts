@@ -20,6 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+import { android as Android } from "tns-core-modules/application/application";
 import { isNullOrUndefined } from "tns-core-modules/utils/types";
 import { IInitializationResult, ILoginResult, LoginResultType, Social, LOGTAG_INIT_ENV, LOGTAG_LOGIN_WITH_FB, LOGTAG_LOGIN_WITH_GOOGLE } from "./SocialLogin-common";
 
@@ -44,6 +45,10 @@ export class SocialLogin extends Social {
 
     init(result: IInitializationResult): IInitializationResult {
         this.logMsg("activity: " + this.Config.activity, LOGTAG_INIT_ENV);
+
+        if (isNullOrUndefined(this.Config.activity)) {
+            this.Config.activity = Android.foregroundActivity || Android.startActivity;
+        }
 
         // Google
         if (this.Config.google.initialize) {
