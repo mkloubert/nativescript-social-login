@@ -60,68 +60,72 @@ var SocialLogin = (function (_super) {
             result = this.initTwitter(result);
         }
         if (!types_1.isNullOrUndefined(this.Config.activity)) {
-            this.Config.activity.onActivityResult = function (requestCode, resultCode, data) {
-                var resultCtx = {};
-                var cb = _this._loginCallback;
-                var activityResultHandled = false;
-                try {
-                    if (requestCode === _this._rcGoogleSignIn) {
-                        resultCtx.provider = "google";
-                        activityResultHandled = true;
-                        if (resultCode === android.app.Activity.RESULT_OK) {
-                            _this.logMsg("OK", LOGTAG_ON_ACTIVITY_RESULT);
-                            var signInResult = com.google.android.gms.auth.api.Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                            if (signInResult.isSuccess()) {
-                                _this.logMsg("Success", LOGTAG_ON_ACTIVITY_RESULT);
-                                resultCtx.code = SocialLogin_common_1.LoginResultType.Success;
-                                var account = signInResult.getSignInAccount();
-                                var usrId = account.getId();
-                                if (!types_1.isNullOrUndefined(usrId)) {
-                                    resultCtx.id = usrId;
+            var onLoginResult_1 = function (_a) {
+                var requestCode = _a.requestCode, resultCode = _a.resultCode, intent = _a.intent;
+                if (requestCode === _this._rcGoogleSignIn || requestCode === _this._rcFacebookSignIn) {
+                    var resultCtx = {};
+                    var callback = _this._loginCallback;
+                    var activityResultHandled = false;
+                    try {
+                        if (requestCode === _this._rcGoogleSignIn) {
+                            resultCtx.provider = "google";
+                            activityResultHandled = true;
+                            if (resultCode === android.app.Activity.RESULT_OK) {
+                                _this.logMsg("OK", LOGTAG_ON_ACTIVITY_RESULT);
+                                var signInResult = com.google.android.gms.auth.api.Auth.GoogleSignInApi.getSignInResultFromIntent(intent);
+                                if (signInResult.isSuccess()) {
+                                    _this.logMsg("Success", LOGTAG_ON_ACTIVITY_RESULT);
+                                    resultCtx.code = SocialLogin_common_1.LoginResultType.Success;
+                                    var account = signInResult.getSignInAccount();
+                                    var usrId = account.getId();
+                                    if (!types_1.isNullOrUndefined(usrId)) {
+                                        resultCtx.id = usrId;
+                                    }
+                                    var photoUrl = account.getPhotoUrl();
+                                    if (!types_1.isNullOrUndefined(photoUrl)) {
+                                        resultCtx.photo = photoUrl;
+                                    }
+                                    resultCtx.authToken = account.getIdToken();
+                                    resultCtx.authCode = account.getServerAuthCode();
+                                    resultCtx.userToken = account.getEmail();
+                                    resultCtx.displayName = account.getDisplayName();
+                                    resultCtx.firstName = account.getGivenName();
+                                    resultCtx.lastName = account.getFamilyName();
                                 }
-                                var photoUrl = account.getPhotoUrl();
-                                if (!types_1.isNullOrUndefined(photoUrl)) {
-                                    resultCtx.photo = photoUrl;
+                                else {
+                                    _this.logMsg("NO SUCCESS!", LOGTAG_ON_ACTIVITY_RESULT);
+                                    resultCtx.code = SocialLogin_common_1.LoginResultType.Failed;
                                 }
-                                resultCtx.authToken = account.getIdToken();
-                                resultCtx.authCode = account.getServerAuthCode();
-                                resultCtx.userToken = account.getEmail();
-                                resultCtx.displayName = account.getDisplayName();
-                                resultCtx.firstName = account.getGivenName();
-                                resultCtx.lastName = account.getFamilyName();
                             }
-                            else {
-                                _this.logMsg("NO SUCCESS!", LOGTAG_ON_ACTIVITY_RESULT);
-                                resultCtx.code = SocialLogin_common_1.LoginResultType.Failed;
+                            else if (resultCode === android.app.Activity.RESULT_CANCELED) {
+                                _this.logMsg("Cancelled", LOGTAG_ON_ACTIVITY_RESULT);
+                                resultCtx.code = SocialLogin_common_1.LoginResultType.Cancelled;
                             }
+                            _this.logResult(resultCtx, LOGTAG_ON_ACTIVITY_RESULT);
                         }
-                        else if (resultCode === android.app.Activity.RESULT_CANCELED) {
-                            _this.logMsg("Cancelled", LOGTAG_ON_ACTIVITY_RESULT);
-                            resultCtx.code = SocialLogin_common_1.LoginResultType.Cancelled;
+                        else if (requestCode === _this._rcFacebookSignIn) {
+                            _this._fbCallbackManager.onActivityResult(requestCode, resultCode, intent);
+                            activityResultHandled = true;
+                            callback = void 0;
                         }
-                        _this.logResult(resultCtx, LOGTAG_ON_ACTIVITY_RESULT);
                     }
-                    else if (requestCode === _this._rcFacebookSignIn) {
-                        _this._fbCallbackManager.onActivityResult(requestCode, resultCode, data);
-                        activityResultHandled = true;
-                        cb = null;
+                    catch (e) {
+                        _this.logMsg("[ERROR] " + e, LOGTAG_ON_ACTIVITY_RESULT);
+                        resultCtx.code = SocialLogin_common_1.LoginResultType.Exception;
+                        resultCtx.error = e;
                     }
-                }
-                catch (e) {
-                    _this.logMsg("[ERROR] " + e, LOGTAG_ON_ACTIVITY_RESULT);
-                    resultCtx.code = SocialLogin_common_1.LoginResultType.Exception;
-                    resultCtx.error = e;
-                }
-                if (!activityResultHandled) {
-                    if (!types_1.isNullOrUndefined(_this.Config.onActivityResult)) {
-                        _this.logMsg("Handling onActivityResult() defined in config...", LOGTAG_ON_ACTIVITY_RESULT);
-                        _this.Config.onActivityResult(requestCode, resultCode, data);
+                    if (!activityResultHandled) {
+                        if (!types_1.isNullOrUndefined(_this.Config.onActivityResult)) {
+                            _this.logMsg("Handling onActivityResult() defined in config...", LOGTAG_ON_ACTIVITY_RESULT);
+                            _this.Config.onActivityResult(requestCode, resultCode, intent);
+                        }
                     }
-                }
-                if (cb) {
-                    cb(resultCtx);
+                    // tslint:disable-next-line:no-unused-expression
+                    callback && callback(resultCtx);
+                    application_1.android.off(application_1.AndroidApplication.activityResultEvent, onLoginResult_1);
                 }
             };
+            application_1.android.on(application_1.AndroidApplication.activityResultEvent, onLoginResult_1);
         }
         return result;
     };
