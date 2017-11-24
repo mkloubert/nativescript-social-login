@@ -209,21 +209,21 @@ export abstract class Social {
         google: {
             initialize: true,
             isRequestAuthCode: false,
-            serverClientId: null,
+            serverClientId: void 0,
             shouldFetchBasicProfile: true,
             scopes: ["profile", "email"]
         },
         facebook: {
             initialize: true,
             clearSession: false,
-            loginBehavior: null,
+            loginBehavior: void 0,
         },
         twitter: {
             initialize: true,
-            key: null,
-            secret: null
+            key: void 0,
+            secret: void 0
         },
-        onActivityResult: null
+        onActivityResult: void 0
     };
 
     abstract init(result: IInitializationResult): IInitializationResult;
