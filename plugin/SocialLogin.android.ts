@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-import { android as Android } from "tns-core-modules/application/application";
+import { android as Android, AndroidApplication, AndroidActivityResultEventData } from "tns-core-modules/application/application";
 import { isNullOrUndefined } from "tns-core-modules/utils/types";
 import { IInitializationResult, ILoginResult, LoginResultType, Social, LOGTAG_INIT_ENV, LOGTAG_LOGIN_WITH_FB, LOGTAG_LOGIN_WITH_GOOGLE } from "./SocialLogin-common";
 
@@ -67,81 +67,86 @@ export class SocialLogin extends Social {
         }
 
         if (!isNullOrUndefined(this.Config.activity)) {
-            (<any>this.Config.activity).onActivityResult = (requestCode: number, resultCode: number, data) => {
-                const resultCtx: Partial<ILoginResult> = {};
-                let cb = this._loginCallback;
-                let activityResultHandled = false;
+            const onLoginResult = ({ requestCode, resultCode, intent }: AndroidActivityResultEventData) => {
+                if (requestCode === this._rcGoogleSignIn || requestCode === this._rcFacebookSignIn) {
+                    const resultCtx: Partial<ILoginResult> = {};
+                    let callback = this._loginCallback;
+                    let activityResultHandled = false;
 
-                try {
-                    if (requestCode === this._rcGoogleSignIn) {
-                        resultCtx.provider = "google";
+                    try {
+                        if (requestCode === this._rcGoogleSignIn) {
+                            resultCtx.provider = "google";
 
-                        activityResultHandled = true;
+                            activityResultHandled = true;
 
-                        if (resultCode === android.app.Activity.RESULT_OK) {
-                            this.logMsg("OK", LOGTAG_ON_ACTIVITY_RESULT);
+                            if (resultCode === android.app.Activity.RESULT_OK) {
+                                this.logMsg("OK", LOGTAG_ON_ACTIVITY_RESULT);
 
-                            const signInResult = com.google.android.gms.auth.api.Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                            if (signInResult.isSuccess()) {
-                                this.logMsg("Success", LOGTAG_ON_ACTIVITY_RESULT);
+                                const signInResult = com.google.android.gms.auth.api.Auth.GoogleSignInApi.getSignInResultFromIntent(intent);
+                                if (signInResult.isSuccess()) {
+                                    this.logMsg("Success", LOGTAG_ON_ACTIVITY_RESULT);
 
-                                resultCtx.code = LoginResultType.Success;
+                                    resultCtx.code = LoginResultType.Success;
 
-                                const account = signInResult.getSignInAccount();
+                                    const account = signInResult.getSignInAccount();
 
-                                const usrId = account.getId();
-                                if (!isNullOrUndefined(usrId)) {
-                                    resultCtx.id = usrId;
+                                    const usrId = account.getId();
+                                    if (!isNullOrUndefined(usrId)) {
+                                        resultCtx.id = usrId;
+                                    }
+
+                                    const photoUrl = account.getPhotoUrl();
+                                    if (!isNullOrUndefined(photoUrl)) {
+                                        resultCtx.photo = photoUrl;
+                                    }
+
+                                    resultCtx.authToken = account.getIdToken();
+                                    resultCtx.authCode = account.getServerAuthCode();
+                                    resultCtx.userToken = account.getEmail();
+                                    resultCtx.displayName = account.getDisplayName();
+                                    resultCtx.firstName = account.getGivenName();
+                                    resultCtx.lastName = account.getFamilyName();
+                                } else {
+                                    this.logMsg("NO SUCCESS!", LOGTAG_ON_ACTIVITY_RESULT);
+
+                                    resultCtx.code = LoginResultType.Failed;
                                 }
+                            } else if (resultCode === android.app.Activity.RESULT_CANCELED) {
+                                this.logMsg("Cancelled", LOGTAG_ON_ACTIVITY_RESULT);
 
-                                const photoUrl = account.getPhotoUrl();
-                                if (!isNullOrUndefined(photoUrl)) {
-                                    resultCtx.photo = photoUrl;
-                                }
-
-                                resultCtx.authToken = account.getIdToken();
-                                resultCtx.authCode = account.getServerAuthCode();
-                                resultCtx.userToken = account.getEmail();
-                                resultCtx.displayName = account.getDisplayName();
-                                resultCtx.firstName = account.getGivenName();
-                                resultCtx.lastName = account.getFamilyName();
-                            } else {
-                                this.logMsg("NO SUCCESS!", LOGTAG_ON_ACTIVITY_RESULT);
-
-                                resultCtx.code = LoginResultType.Failed;
+                                resultCtx.code = LoginResultType.Cancelled;
                             }
-                        } else if (resultCode === android.app.Activity.RESULT_CANCELED) {
-                            this.logMsg("Cancelled", LOGTAG_ON_ACTIVITY_RESULT);
 
-                            resultCtx.code = LoginResultType.Cancelled;
+                            this.logResult(resultCtx, LOGTAG_ON_ACTIVITY_RESULT);
+                        } else if (requestCode === this._rcFacebookSignIn) {
+                            this._fbCallbackManager.onActivityResult(requestCode, resultCode, intent);
+
+                            activityResultHandled = true;
+                            callback = void 0;
                         }
+                    } catch (e) {
+                        this.logMsg("[ERROR] " + e, LOGTAG_ON_ACTIVITY_RESULT);
 
-                        this.logResult(resultCtx, LOGTAG_ON_ACTIVITY_RESULT);
-                    } else if (requestCode === this._rcFacebookSignIn) {
-                        this._fbCallbackManager.onActivityResult(requestCode, resultCode, data);
-
-                        activityResultHandled = true;
-                        cb = null;
+                        resultCtx.code = LoginResultType.Exception;
+                        resultCtx.error = e;
                     }
-                } catch (e) {
-                    this.logMsg("[ERROR] " + e, LOGTAG_ON_ACTIVITY_RESULT);
 
-                    resultCtx.code = LoginResultType.Exception;
-                    resultCtx.error = e;
-                }
+                    if (!activityResultHandled) {
+                        if (!isNullOrUndefined(this.Config.onActivityResult)) {
+                            this.logMsg("Handling onActivityResult() defined in config...", LOGTAG_ON_ACTIVITY_RESULT);
 
-                if (!activityResultHandled) {
-                    if (!isNullOrUndefined(this.Config.onActivityResult)) {
-                        this.logMsg("Handling onActivityResult() defined in config...", LOGTAG_ON_ACTIVITY_RESULT);
-
-                        this.Config.onActivityResult(requestCode, resultCode, data);
+                            this.Config.onActivityResult(requestCode, resultCode, intent);
+                        }
                     }
-                }
 
-                if (cb) {
-                    cb(resultCtx);
+                    this.logMsg("Calling Callback function with Results", LOGTAG_ON_ACTIVITY_RESULT);
+                    // tslint:disable-next-line:no-unused-expression
+                    callback && callback(resultCtx);
+                    Android.off(AndroidApplication.activityResultEvent, onLoginResult);
                 }
             };
+
+            Android.on(AndroidApplication.activityResultEvent, onLoginResult);
         }
 
         return result;
