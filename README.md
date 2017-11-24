@@ -249,7 +249,7 @@ if (Application.android) {
         let result = SocialLogin.init({
             activity: event.activity,
         });
-    };
+    });
 }
 ```
 
