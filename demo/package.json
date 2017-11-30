@@ -13,7 +13,7 @@
     }
   },
   "dependencies": {
-    "nativescript-social-login": "file:///Users/apple/Desktop/NS_PLAY/nativescript-social-login/plugin",
+    "nativescript-social-login": "^3.0.5",
     "tns-core-modules": "3.2.0",
     "tns-platform-declarations": "^3.3.0"
   },
