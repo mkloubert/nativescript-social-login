@@ -58,6 +58,8 @@
   ],
   "scripts": {
     "build": "npm i && tsc",
+    "dev": "tsc -w",
+    "next": "npm publish --tag next",
     "lint": "tslint --project tsconfig.json --config tslint.json",
     "demo.android": "npm run preparedemo && cd ../demo && tns platform remove android && tns run android --justlaunch",
     "demo.ios": "npm run preparedemo && cd ../demo && tns run ios --emulator",
