@@ -207,7 +207,7 @@ export class SocialLogin extends Social {
 	private createSignInDelegate() {
 		const self = this;
 		class MySignInDelegate extends NSObject {
-			ObjCProtocols = [GIDSignInDelegate, GIDSignInUIDelegate];
+			static ObjCProtocols = [GIDSignInDelegate, GIDSignInUIDelegate];
 
 			constructor() {
 				super();
