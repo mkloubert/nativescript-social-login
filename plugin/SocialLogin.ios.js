@@ -172,9 +172,7 @@ var SocialLogin = (function (_super) {
         var MySignInDelegate = (function (_super) {
             __extends(MySignInDelegate, _super);
             function MySignInDelegate() {
-                var _this = _super.call(this) || this;
-                _this.ObjCProtocols = [GIDSignInDelegate, GIDSignInUIDelegate];
-                return _this;
+                return _super.call(this) || this;
             }
             MySignInDelegate.prototype.signInDidSignInForUserWithError = function (signIn, user, error) {
                 if (error) {
@@ -223,6 +221,7 @@ var SocialLogin = (function (_super) {
             MySignInDelegate.prototype.signInDismissViewController = function (signIn, viewController) {
                 viewController.dismissViewControllerAnimatedCompletion(true, null);
             };
+            MySignInDelegate.ObjCProtocols = [GIDSignInDelegate, GIDSignInUIDelegate];
             return MySignInDelegate;
         }(NSObject));
         return new MySignInDelegate();

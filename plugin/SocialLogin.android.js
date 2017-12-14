@@ -120,6 +120,7 @@ var SocialLogin = (function (_super) {
                             _this.Config.onActivityResult(requestCode, resultCode, intent);
                         }
                     }
+                    _this.logMsg("Calling Callback function with Results", LOGTAG_ON_ACTIVITY_RESULT);
                     // tslint:disable-next-line:no-unused-expression
                     callback && callback(resultCtx);
                     application_1.android.off(application_1.AndroidApplication.activityResultEvent, onLoginResult_1);
