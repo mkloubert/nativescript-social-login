@@ -39,7 +39,7 @@ const actionRunnable = java.lang.Runnable.extend({
 
 export class SocialLogin extends Social {
     private _rcGoogleSignIn: number = 597; // < 16 bits
-    private _rcFacebookSignIn: number = 442; // < 16 bits
+    private _rcFacebookSignIn: number = 64206; // < 16 bits
     private _fbCallbackManager;
     private _fbLoginManager;
 
