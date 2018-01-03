@@ -30,9 +30,9 @@ dependencies {
     def facebookSDKVersion = project.hasProperty('facebookSDKVersion') ? project.facebookSDKVersion : '[4, 5)'
     compile "com.facebook.android:facebook-android-sdk:$facebookSDKVersion"
 
-    compile('com.twitter.sdk.android:twitter:1.13.2@aar') {
-        transitive = true
-    }
+    // compile('com.twitter.sdk.android:twitter:1.13.2@aar') {
+    //     transitive = true
+    // }
 
     // https://stackoverflow.com/a/43272992/8236404
     def supportVersion = project.hasProperty('supportVersion') ? project.supportVersion : '26.1.0'
