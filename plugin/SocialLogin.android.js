@@ -36,8 +36,8 @@ var SocialLogin = (function (_super) {
     __extends(SocialLogin, _super);
     function SocialLogin() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this._rcGoogleSignIn = 597965301;
-        _this._rcFacebookSignIn = 64206;
+        _this._rcGoogleSignIn = 597; // < 16 bits
+        _this._rcFacebookSignIn = 442; // < 16 bits
         return _this;
     }
     SocialLogin.prototype.init = function (result) {
