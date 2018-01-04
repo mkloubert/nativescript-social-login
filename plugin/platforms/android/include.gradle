@@ -28,7 +28,10 @@ dependencies {
     compile "com.google.android.gms:play-services-auth:$googlePlayServicesVersion"
 
     def facebookSDKVersion = project.hasProperty('facebookSDKVersion') ? project.facebookSDKVersion : '[4, 5)'
-    compile "com.facebook.android:facebook-login:$facebookSDKVersion"
+    // https://github.com/mkloubert/nativescript-social-login/issues/32#issue-285587592
+    compile ("com.facebook.android:facebook-login:$facebookSDKVersion"){
+        exclude group: 'com.google.zxing'
+    }
 
     // compile('com.twitter.sdk.android:twitter:1.13.2@aar') {
     //     transitive = true
