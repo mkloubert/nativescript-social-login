@@ -7,3 +7,4 @@
 /src/node_modules
 /src/hooks
 *.log
+.vscode/settings.json
