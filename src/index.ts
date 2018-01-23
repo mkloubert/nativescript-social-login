@@ -86,6 +86,9 @@ export function loginWithGoogle(callback: (result: ILoginResult) => void) {
 export function loginWithTwitter(callback: (result: ILoginResult) => void) {
     login("twitter", callback);
 }
+export function loginWithLinkedIn(callback: (result: ILoginResult) => void) {
+    login("linkedin", callback);
+}
 
 // Export neccessary Interfaces
 export { LoginResultType, ILogger, ILoginConfiguration, IInitializationResult, ILoginResult } from "./SocialLogin-common";

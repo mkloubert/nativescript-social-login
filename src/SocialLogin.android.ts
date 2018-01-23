@@ -429,4 +429,7 @@ export class SocialLogin extends Social {
         }
         return result;
     }
+    public loginWithLinkedIn(callback: (result: Partial<ILoginResult>) => void) {
+
+    }
 }

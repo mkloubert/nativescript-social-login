@@ -38,4 +38,5 @@ export declare function loginWithGoogle(callback: (result: ILoginResult) => void
  * @params {Function} callback The callback.
  */
 export declare function loginWithTwitter(callback: (result: ILoginResult) => void): void;
+export declare function loginWithLinkedIn(callback: (result: ILoginResult) => void): void;
 export { LoginResultType, ILogger, ILoginConfiguration, IInitializationResult, ILoginResult } from "./SocialLogin-common";

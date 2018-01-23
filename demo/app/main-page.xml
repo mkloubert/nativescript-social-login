@@ -19,7 +19,8 @@
             
             <Button text="Save settings"
                     tap="{{ saveSettings }}" />
-            
+            <Button text="LinkedIn Loign"
+                    tap="{{ loginWithLinkedin }}" />
             <Label verticalAlignment="stretch"
                    text="{{ initResultLog }}"
                    textWrap="true" />

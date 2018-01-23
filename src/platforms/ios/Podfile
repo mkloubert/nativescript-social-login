@@ -1,3 +1,4 @@
 pod 'FBSDKCoreKit', '~> 4.27.1'
 pod 'FBSDKLoginKit', '~> 4.27.1'
 pod 'Google/SignIn'
+pod 'LinkedinSwift', '>= 1.6.2'

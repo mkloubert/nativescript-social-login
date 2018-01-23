@@ -11,4 +11,5 @@ export declare class SocialLogin extends Social {
     private initFacebook(result);
     private initTwitter(result);
     private initGoogle(result);
+    loginWithLinkedIn(callback: (result: Partial<ILoginResult>) => void): void;
 }
