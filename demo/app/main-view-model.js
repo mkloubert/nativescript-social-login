@@ -48,11 +48,11 @@ function createViewModel() {
 
             var result = SocialLogin.init({
                 linkedin: {
-                    clientId: '75urm0g3386r26',
-                    clientSecret: '3AJTvaKNOEG4ISJ0',
+                    clientId: '{{youClientID}}',
+                    clientSecret: '{{yourClientSecret}}',
                     permissions: ["r_basicprofile", "r_emailaddress"],
                     state: '',
-                    redirectUri: "https://giddh.com/login"
+                    redirectUri: "{{yourredirectURL}}"
                 }
             });
 
