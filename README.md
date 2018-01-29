@@ -14,6 +14,7 @@
 | Google | Yes | Yes |
 | Facebook | Yes | Yes |
 | Twitter | No | No |
+| Linkedin | Yes | Yes |
 
 ## License
 
@@ -143,6 +144,18 @@ Add the following to your Info.plist file located in app/App_Resources/iOS
     <key>FacebookDisplayName</key>
     <string>FacebookLoginDemo</string>
     <!-- FACEBOOK END -->
+
+    <key>LIAppId</key>
+    <string>{YOUR_LINKEDIN_APPID}</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>li{YOUR_LINKEDIN_SECREAT}</string>
+            </array>
+        </dict>
+    </array>
 
 ```
 https://developers.facebook.com/docs/ios

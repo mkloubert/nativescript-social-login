@@ -114,13 +114,13 @@
   <string>Cheefo nativescript test</string>
 	<!-- FACEBOOK END -->
 	<key>LIAppId</key>
-    <string>75urm0g3386r26</string>
+    <string>{YOUR_LINKEDIN_APPID}</string>
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
             <key>CFBundleURLSchemes</key>
             <array>
-                <string>li75urm0g3386r26</string>
+                <string>li{YOUR_LINKEDIN_SECREAT}</string>
             </array>
         </dict>
     </array>
