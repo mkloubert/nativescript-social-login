@@ -21,12 +21,13 @@ buildscript {
 repositories {
     mavenCentral()
     maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
+    compile 'com.github.neurospeech:unofficial-linkedin-sdk-android:v1.1.4'
     def googlePlayServicesVersion = project.hasProperty('googlePlayServicesVersion') ? project.googlePlayServicesVersion : '10.2.6'
     compile "com.google.android.gms:play-services-auth:$googlePlayServicesVersion"
-
     def facebookSDKVersion = project.hasProperty('facebookSDKVersion') ? project.facebookSDKVersion : '[4, 5)'
     // https://github.com/mkloubert/nativescript-social-login/issues/32#issue-285587592
     compile ("com.facebook.android:facebook-login:$facebookSDKVersion"){

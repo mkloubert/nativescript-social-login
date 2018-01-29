@@ -8,3 +8,5 @@
 /src/hooks
 *.log
 .vscode/settings.json
+demo/giddh.keystore
+.idea/*

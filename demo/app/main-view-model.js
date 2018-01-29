@@ -24,7 +24,7 @@ function createViewModel() {
             var androidResources = appCtx.getResources();
             // facebook APP ID
             try {
-                viewModel.facebookAppId = androidResources.getString(org.nativescript.NativescriptSocialLoginDemo.R.string.facebook_app_id);
+                viewModel.facebookAppId = androidResources.getString(com.giddh.accounts.R.string.facebook_app_id);
             } catch (e) {
                 console.log("[ERROR] createViewModel() >> facebookAppId: " + e);
             }
@@ -45,7 +45,6 @@ function createViewModel() {
 
         try {
             var googleServerClientId = viewModel.get("googleServerClientId");
-
             var result = SocialLogin.init({
                 linkedin: {
                     clientId: '{{youClientID}}',
@@ -78,6 +77,7 @@ function createViewModel() {
         } catch (e) {
             viewModel.set("initResultLog", "[ERROR]: " + e);
         }
+
     };
     viewModel.saveSettings = function () {
         try {

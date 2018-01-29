@@ -19,8 +19,6 @@
             
             <Button text="Save settings"
                     tap="{{ saveSettings }}" />
-            <Button text="LinkedIn Loign"
-                    tap="{{ loginWithLinkedin }}" />
             <Label verticalAlignment="stretch"
                    text="{{ initResultLog }}"
                    textWrap="true" />
@@ -40,6 +38,10 @@
             <Image src="~/img/XzoRm.png"
                    visibility="{{ initResult &amp;&amp; initResult.google.isInitialized ? 'visible' : 'collapsed' }}"
                    tap="{{ loginWithGoogle }}" />
+
+            <Image src="~/img/linkedin.png"
+                   visibility="{{ initResult &amp;&amp; initResult.linkedin.isInitialized ? 'visible' : 'collapsed' }}"
+                   tap="{{ loginWithLinkedin }}" />
 
             <GridLayout rows="auto,*" columns="*"
                         horizontalAlignment="stretch" verticalAlignment="stretch"
