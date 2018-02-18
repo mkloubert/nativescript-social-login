@@ -77,7 +77,7 @@ export interface ILoginResult {
 /**
  * Stores data of the result of an initialization.
  */
-export type IInitializationResultType = { isInitialized: boolean; error?: any; };
+export type IInitializationResultType = { isInitialized: boolean; error?: any };
 
 export interface IInitializationResult {
     facebook: IInitializationResultType;
@@ -92,8 +92,9 @@ export interface IInitializationResult {
 export interface IConfig {
     /**
      * The underlying custom activity to use.
+     * @type android.app.Activity
      */
-    activity: android.app.Activity;
+    activity: any;
 
     /**
      * Facebook specific configuration.
@@ -102,7 +103,7 @@ export interface IConfig {
         /**
          * Initialize Facebook or not. Default: (true)
          */
-        initialize?: boolean,
+        initialize?: boolean;
         /**
          * Should Logout current Facebook session or not. Default: (false)
          */
@@ -120,7 +121,7 @@ export interface IConfig {
         /**
          * Initialize Google or not. Default: (true)
          */
-        initialize?: boolean,
+        initialize?: boolean;
 
         /**
          * The server client ID for requesting server auth token.
@@ -139,13 +140,17 @@ export interface IConfig {
         /**
          * iOS only
          */
-        scopes?: string[]
+        scopes?: string[];
     };
 
     /**
      * Fallback action for the result of the underlying activity.
      */
-    onActivityResult: (requestCode: number, resultCode: number, data: any) => void;
+    onActivityResult: (
+        requestCode: number,
+        resultCode: number,
+        data: any
+    ) => void;
 
     /**
      * Twitter specific configuration.
@@ -154,16 +159,16 @@ export interface IConfig {
         /**
          * Initialize Twitter or not. Default: (true)
          */
-        initialize?: boolean,
+        initialize?: boolean;
         /**
          * The consumer key.
          */
-        key?: string,
+        key?: string;
 
         /**
          * The consumer secret.
          */
-        secret?: string,
+        secret?: string;
     };
     linkedin: {
         /**
@@ -214,7 +219,7 @@ export enum LoginResultType {
     /**
      * Failed
      */
-    Failed = -2,
+    Failed = -2
 }
 
 import { isNullOrUndefined } from "tns-core-modules/utils/types";
@@ -241,7 +246,7 @@ export abstract class Social {
         facebook: {
             initialize: true,
             clearSession: false,
-            loginBehavior: void 0,
+            loginBehavior: void 0
         },
         twitter: {
             initialize: true,
@@ -259,10 +264,13 @@ export abstract class Social {
     };
 
     abstract init(result: IInitializationResult): IInitializationResult;
-    abstract loginWithTwitter(callback: (result: Partial<ILoginResult>) => void);
+    abstract loginWithTwitter(
+        callback: (result: Partial<ILoginResult>) => void
+    );
     abstract loginWithGoogle(callback: (result: Partial<ILoginResult>) => void);
     abstract loginWithFacebook(callback: (result: Partial<ILoginResult>) => void);
     abstract loginWithLinkedIn(callback: (result: Partial<ILoginResult>) => void);
+
 
     protected logMsg(msg, tag = "") {
         try {
@@ -270,9 +278,11 @@ export abstract class Social {
 
             for (let i = 0; i < loggers.length; i++) {
                 try {
-                    (loggers[i])(msg, tag);
+                    loggers[i](msg, tag);
                 } catch (e) {
-                    console.log(`[ERROR] nativescript-social-login >> logMsg() >> logger[${i}]: ${e}`);
+                    console.log(
+                        `[ERROR] nativescript-social-login >> logMsg() >> logger[${i}]: ${e}`
+                    );
                 }
             }
         } catch (e) {
@@ -288,22 +298,25 @@ export abstract class Social {
         }
     }
 
-    initEnvironment(config: ILoginConfiguration = {}, getLoggers: () => ILogger[]): IInitializationResult {
+    initEnvironment(
+        config: ILoginConfiguration = {},
+        getLoggers: () => ILogger[]
+    ): IInitializationResult {
         this._getLoggers = getLoggers;
 
         this.Config = merge(this.defaultConfig, config);
-
         this.logMsg("initialize.google: " + this.Config.google.initialize, LOGTAG_INIT_ENV);
         this.logMsg("initialize.facebook: " + this.Config.facebook.initialize, LOGTAG_INIT_ENV);
         this.logMsg("initialize.twitter: " + this.Config.twitter.initialize, LOGTAG_INIT_ENV);
         this.logMsg("initialize.linkedin: " + this.Config.linkedin.initialize, LOGTAG_INIT_ENV);
 
+
         const result = this.init(<IInitializationResult>{
             facebook: {
-                isInitialized: true,
+                isInitialized: true
             },
             google: {
-                isInitialized: true,
+                isInitialized: true
             },
             twitter: {
                 isInitialized: undefined,
@@ -318,10 +331,14 @@ export abstract class Social {
         this.logMsg("twitter.isInitialized: " + result.twitter.isInitialized, LOGTAG_INIT_ENV);
         this.logMsg("linkedin.isInitialized: " + result.linkedin.isInitialized, LOGTAG_INIT_ENV);
 
+
         return result;
     }
 
-    loginWithProvider(provider: string, callback: (result: Partial<ILoginResult>) => void) {
+    loginWithProvider(
+        provider: string,
+        callback: (result: Partial<ILoginResult>) => void
+    ) {
         if (isNullOrUndefined(provider)) {
             provider = "";
         }
@@ -353,7 +370,8 @@ export abstract class Social {
                 this.loginWithLinkedIn(callback);
                 break;
 
-            default: throw `Provider '${provider}' is NOT supported!`;
+            default:
+                throw `Provider '${provider}' is NOT supported!`;
         }
     }
 }
