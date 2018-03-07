@@ -374,4 +374,44 @@ export abstract class Social {
                 throw `Provider '${provider}' is NOT supported!`;
         }
     }
+    
+    logoutWithProvider(
+        provider: string,
+        callback: (result: Partial<ILoginResult>) => void
+    ) {
+        if (isNullOrUndefined(provider)) {
+            provider = "";
+        }
+
+        provider = ("" + provider).toLowerCase().trim();
+
+        this.logMsg(`Provider: ${provider}`);
+
+        switch (provider) {
+            case "":
+            case "google": {
+                this.logMsg("Will use Google sign in...");
+                this.logoutWithGoogle(callback);
+                break;
+            }
+
+//             case "facebook":
+//             case "fb": {
+//                 this.logMsg("Will use Facebook SDK...");
+//                 this.logoutWithFacebook(callback);
+//                 break;
+//             }
+
+            // TODO
+            /* case "twitter":
+                this.loginWithTwitter(callback);
+//                 break; */
+//             case "linkedin":
+//                 this.WithLinkedIn(callback);
+//                 break;
+
+            default:
+                throw `Provider '${provider}' is NOT supported!`;
+        }
+    }
 }
