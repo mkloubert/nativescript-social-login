@@ -345,7 +345,7 @@ export class SocialLogin extends Social {
 	}
 
 	public loginWithTwitter(callback: (result: Partial<ILoginResult>) => void) { }
-
+	public logoutWithGoogle(callback: (result: Partial<ILoginResult>) => void) { }
 	public loginWithLinkedIn(callback: (result: Partial<ILoginResult>) => void) {
 
 		this.linkedinHelper.authorizeSuccessErrorCancel((lsToken) => {
