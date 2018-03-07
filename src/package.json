@@ -1,7 +1,7 @@
 {
   "name": "nativescript-social-login-linkedin",
   "description": "NativeScript plugin for social (token based) log-ins.",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "main": "index.js",
   "typings": "index.d.ts",
   "nativescript": {
@@ -59,4 +59,5 @@
     "tslint": "~5.8.0",
     "typescript": "~2.4.2"
   }
+
 }

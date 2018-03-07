@@ -2,11 +2,14 @@
 /demo/node_modules
 /demo/platforms
 /demo/app/*.map
+/demo/.DS_Store
 /src/*.map
 /src/*.js
 /src/node_modules
 /src/hooks
 *.log
+.DS_Store
+
 .vscode/settings.json
 demo/giddh.keystore
 .idea/*

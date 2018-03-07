@@ -69,8 +69,9 @@ export interface IInitializationResult {
 export interface IConfig {
     /**
      * The underlying custom activity to use.
+     * @type android.app.Activity
      */
-    activity: android.app.Activity;
+    activity: any;
     /**
      * Facebook specific configuration.
      */
