@@ -43,6 +43,7 @@ export class SocialLogin extends Social {
     private _rcLinkedInSignIn: number = 3672; // < 16 bits
     private _fbCallbackManager;
     private _fbLoginManager;
+    private _googleClient;
     init(result: IInitializationResult): IInitializationResult {
         this.logMsg("activity: " + this.Config.activity, LOGTAG_INIT_ENV);
 
@@ -178,7 +179,13 @@ export class SocialLogin extends Social {
             throw e;
         }
     }
-
+    logoutWithGoogle(callback: (result: Partial<ILoginResult>) => void) { 
+        if (this._googleClient.isConnected())
+        {
+            com.google.android.gms.auth.apiAuth.GoogleSignInApi.signOut(this._googleClient);
+            callback(null);
+        }
+    }
     loginWithGoogle(callback: (result: Partial<ILoginResult>) => void) {
         try {
             let optionBuilder = new com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -200,7 +207,7 @@ export class SocialLogin extends Social {
                 .Builder(this.Config.activity.getApplicationContext())
                 .addApi(com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API, optionBuilder.build())
                 .build();
-
+            this._googleClient = client;
             this._loginCallback = callback;
 
             const uiAction = new actionRunnable();
