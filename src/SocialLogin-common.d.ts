@@ -193,8 +193,10 @@ export declare abstract class Social {
     abstract loginWithGoogle(callback: (result: Partial<ILoginResult>) => void): any;
     abstract loginWithFacebook(callback: (result: Partial<ILoginResult>) => void): any;
     abstract loginWithLinkedIn(callback: (result: Partial<ILoginResult>) => void): any;
+    abstract logoutWithGoogle(callback: (result: Partial<ILoginResult>) => void): any;
     protected logMsg(msg: any, tag?: string): void;
     protected logResult(resultCtx: any, tag: any): void;
     initEnvironment(config: ILoginConfiguration, getLoggers: () => ILogger[]): IInitializationResult;
     loginWithProvider(provider: string, callback: (result: Partial<ILoginResult>) => void): void;
+    logoutWithProvider(provider: string, callback: (result: Partial<ILoginResult>) => void): void;
 }

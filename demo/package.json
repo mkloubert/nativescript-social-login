@@ -9,11 +9,11 @@
       "version": "3.4.0"
     },
     "tns-android": {
-      "version": "3.5.0-rc-2018.1.8.1"
+      "version": "3.4.2"
     }
   },
   "dependencies": {
-    "nativescript-social-login": "file:../src",
+    "nativescript-social-login-linkedin": "file:..\\src",
     "tns-core-modules": "~3.4.0",
     "tns-platform-declarations": "~3.4.0"
   },

@@ -179,9 +179,8 @@ export class SocialLogin extends Social {
             throw e;
         }
     }
-    logoutWithGoogle(callback: (result: Partial<ILoginResult>) => void) { 
-        if (this._googleClient.isConnected())
-        {
+    logoutWithGoogle(callback: (result: Partial<ILoginResult>) => void) {
+        if (this._googleClient.isConnected()) {
             com.google.android.gms.auth.apiAuth.GoogleSignInApi.signOut(this._googleClient);
             callback(null);
         }

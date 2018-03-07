@@ -118,6 +118,20 @@ function createViewModel() {
         }
     }
 
+    viewModel.logoutWithGoogle = function () {
+        try {
+            SocialLogin.logoutWithGoogle(function (result) {
+                try {
+                    viewModel.set("loginResult", result);
+                } catch (e) {
+                    console.log("[ERROR] viewModel.loginWithGoogle(1): " + e);
+                }
+            });
+        } catch (e) {
+            console.log("[ERROR] viewModel.loginWithGoogle(0): " + e);
+        }
+    }
+
     viewModel.loginWithLinkedin = function () {
         SocialLogin.loginWithLinkedIn(function (result) {
             try {

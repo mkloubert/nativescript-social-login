@@ -271,7 +271,7 @@ export abstract class Social {
     abstract loginWithFacebook(callback: (result: Partial<ILoginResult>) => void);
     abstract loginWithLinkedIn(callback: (result: Partial<ILoginResult>) => void);
 
-
+    abstract logoutWithGoogle(callback: (result: Partial<ILoginResult>) => void);
     protected logMsg(msg, tag = "") {
         try {
             const loggers = this._getLoggers();

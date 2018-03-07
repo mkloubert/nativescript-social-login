@@ -20,6 +20,8 @@ export declare function init(config?: ILoginConfiguration): IInitializationResul
  * @throws Provider is (currently) NOT supported.
  */
 export declare function login(provider: string, callback: (result: ILoginResult) => void): void;
+
+export declare function logout(provider: string, callback: (result: ILoginResult) => void): void;
 /**
  * Logs in with Facebook auth API.
  *
