@@ -1,7 +1,7 @@
 {
-  "name": "nativescript-social-login",
+  "name": "nativescript-social-login-linkedin",
   "description": "NativeScript plugin for social (token based) log-ins.",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "main": "index.js",
   "typings": "index.d.ts",
   "nativescript": {
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mkloubert/nativescript-social-login"
+    "url": "https://github.com/govi2010/nativescript-social-login/tree/LinkedInLogin"
   },
   "keywords": [
     "NativeScript",
@@ -24,45 +24,17 @@
     "Token"
   ],
   "author": {
-    "name": "Marcel Joachim Kloubert",
-    "email": "marcel.kloubert@gmx.net"
+    "name": "Govinda Alwani",
+    "email": "govi2010@gmail.com"
   },
-  "contributors": [
-    {
-      "name": "Brad Martin",
-      "email": "bmartin@nstudio.io",
-      "url": "https://github.com/bradmartin"
-    },
-    {
-      "name": "Andrii Votiakov",
-      "email": "Votiakov.andrey@gmail.com",
-      "url": "https://github.com/votiakov"
-    },
-    {
-      "name": "Shripal Soni",
-      "url": "http://www.shripalsoni.com"
-    },
-    {
-      "name": "Felipe Waku",
-      "url": "https://github.com/felipewaku"
-    },
-    {
-      "name": "Fábio Araújo",
-      "url": "https://github.com/fmsaraujo"
-    },
-    {
-      "name": "Jeremiah Ogbomo",
-      "email": "jeremiahogbomo@gmail.com",
-      "url": "https://github.com/jogboms"
-    }
-  ],
+  "contributors": [],
   "scripts": {
     "build": "npm i && tsc",
     "dev": "tsc -w",
     "next": "npm publish --tag next",
     "lint": "tslint --project tsconfig.json --config tslint.json",
-    "demo.android": "npm run preparedemo && cd ../demo && tns platform remove android && tns run android  --chrome",
-    "demo.ios": "npm run preparedemo && cd ../demo && tns debug ios",
+    "demo.android": "npm run preparedemo && cd ../demo && tns platform remove android && tns run android --justlaunch",
+    "demo.ios": "npm run preparedemo && cd ../demo && tns run ios --emulator",
     "demo.ios.device": "npm run preparedemo && cd ../demo && tns platform remove ios && tns run ios",
     "development.setup": "npm run setup && npm link && cd ../demo && npm link nativescript-social-login && cd ../src",
     "preparedemo": "npm run build && cd ../demo && tns plugin remove nativescript-social-login && tns plugin add ../src && tns install",
@@ -72,9 +44,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mkloubert/nativescript-social-login/issues"
+    "url": "https://github.com/govi2010/nativescript-social-login/issues"
   },
-  "homepage": "https://github.com/mkloubert/nativescript-social-login",
+  "homepage": "https://github.com/govi2010/nativescript-social-login",
   "readmeFilename": "README.md",
   "devDependencies": {
     "babel-traverse": "6.25.0",
@@ -82,8 +54,8 @@
     "babylon": "6.17.3",
     "lazy": "1.0.11",
     "nativescript-dev-typescript": "~0.6.0",
-    "tns-core-modules": "~3.4.0",
-    "tns-platform-declarations": "~3.4.0",
+    "tns-core-modules": "3.4.0",
+    "tns-platform-declarations": "^3.4.0",
     "tslint": "~5.8.0",
     "typescript": "~2.4.2"
   }
