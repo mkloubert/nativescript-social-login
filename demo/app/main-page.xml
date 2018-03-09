@@ -29,7 +29,7 @@
      <TabViewItem title="Buttons">
        <TabViewItem.view>
           <StackLayout className="mjk-buttons">
-          <Button text="logout" tap="{{  }}">
+          <Button text="logout" tap="{{  }}" />
             <!-- Facebook login -->
             <Image src="~/img/Vk9SO.png"
                    visibility="{{ initResult &amp;&amp; initResult.facebook.isInitialized ? 'visible' : 'collapsed' }}"
