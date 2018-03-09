@@ -13,6 +13,9 @@
 			<string>fbapi</string>
 			<string>fb-messenger-api</string>
 			<string>fbshareextension</string>
+			<string>linkedin</string>
+        	<string>linkedin-sdk2</string>
+        	<string>linkedin-sdk</string>
 		</array>
 	</dict>
 </plist>

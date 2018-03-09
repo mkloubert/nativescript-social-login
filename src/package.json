@@ -1,96 +1,62 @@
 {
-    "name": "nativescript-social-login",
-    "description": "NativeScript plugin for social (token based) log-ins.",
-    "version": "3.0.8",
-    "main": "index.js",
-    "typings": "index.d.ts",
-    "nativescript": {
-        "platforms": {
-            "android": "3.3.1",
-            "ios": "3.3.0"
-        }
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/mkloubert/nativescript-social-login"
-    },
-    "keywords": [
-        "NativeScript",
-        "Google",
-        "Facebook",
-        "Social",
-        "Login",
-        "Access",
-        "Token"
-    ],
-    "author": {
-        "name": "Marcel Joachim Kloubert",
-        "email": "marcel.kloubert@gmx.net"
-    },
-    "contributors": [
-        {
-            "name": "Brad Martin",
-            "email": "bmartin@nstudio.io",
-            "url": "https://github.com/bradmartin"
-        },
-        {
-            "name": "Andrii Votiakov",
-            "email": "Votiakov.andrey@gmail.com",
-            "url": "https://github.com/votiakov"
-        },
-        {
-            "name": "Shripal Soni",
-            "url": "http://www.shripalsoni.com"
-        },
-        {
-            "name": "Felipe Waku",
-            "url": "https://github.com/felipewaku"
-        },
-        {
-            "name": "Fábio Araújo",
-            "url": "https://github.com/fmsaraujo"
-        },
-        {
-            "name": "Jeremiah Ogbomo",
-            "email": "jeremiahogbomo@gmail.com",
-            "url": "https://github.com/jogboms"
-        }
-    ],
-    "scripts": {
-        "build": "npm i && tsc",
-        "dev": "tsc -w",
-        "next": "npm publish --tag next",
-        "lint": "tslint --project tsconfig.json --config tslint.json",
-        "demo.android":
-            "npm run preparedemo && cd ../demo && tns platform remove android && tns run android --justlaunch",
-        "demo.ios":
-            "npm run preparedemo && cd ../demo && tns run ios --emulator",
-        "demo.ios.device":
-            "npm run preparedemo && cd ../demo && tns platform remove ios && tns run ios",
-        "development.setup":
-            "npm run setup && npm link && cd ../demo && npm link nativescript-social-login && cd ../src",
-        "preparedemo":
-            "npm run build && cd ../demo && tns plugin remove nativescript-social-login && tns plugin add ../src && tns install",
-        "prepublishOnly": "npm run build",
-        "setup": "npm run build && cd ../demo && npm i",
-        "setupandinstall":
-            "npm i && cd ../demo && npm i && cd ../src && npm run build && cd ../demo && tns plugin add ../src && cd ../src"
-    },
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/mkloubert/nativescript-social-login/issues"
-    },
-    "homepage": "https://github.com/mkloubert/nativescript-social-login",
-    "readmeFilename": "README.md",
-    "devDependencies": {
-        "babel-traverse": "6.25.0",
-        "babel-types": "6.25.0",
-        "babylon": "6.17.3",
-        "lazy": "1.0.11",
-        "nativescript-dev-typescript": "~0.6.0",
-        "tns-core-modules": "3.4.0",
-        "tns-platform-declarations": "^3.4.0",
-        "tslint": "~5.8.0",
-        "typescript": "~2.4.2"
+  "name": "nativescript-social-login-linkedin",
+  "description": "NativeScript plugin for social (token based) log-ins.",
+  "version": "3.1.0",
+  "main": "index.js",
+  "typings": "index.d.ts",
+  "nativescript": {
+    "platforms": {
+      "android": "3.3.1",
+      "ios": "3.3.0"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/govi2010/nativescript-social-login/tree/LinkedInLogin"
+  },
+  "keywords": [
+    "NativeScript",
+    "Google",
+    "Facebook",
+    "Social",
+    "Login",
+    "Access",
+    "Token"
+  ],
+  "author": {
+    "name": "Govinda Alwani",
+    "email": "govi2010@gmail.com"
+  },
+  "contributors": [],
+  "scripts": {
+    "build": "npm i && tsc",
+    "dev": "tsc -w",
+    "next": "npm publish --tag next",
+    "lint": "tslint --project tsconfig.json --config tslint.json",
+    "demo.android": "npm run preparedemo && cd ../demo && tns platform remove android && tns run android --justlaunch",
+    "demo.ios": "npm run preparedemo && cd ../demo && tns run ios --emulator",
+    "demo.ios.device": "npm run preparedemo && cd ../demo && tns platform remove ios && tns run ios",
+    "development.setup": "npm run setup && npm link && cd ../demo && npm link nativescript-social-login && cd ../src",
+    "preparedemo": "npm run build && cd ../demo && tns plugin remove nativescript-social-login && tns plugin add ../src && tns install",
+    "prepublishOnly": "npm run build",
+    "setup": "npm run build && cd ../demo && npm i",
+    "setupandinstall": "npm i && cd ../demo && npm i && cd ../src && npm run build && cd ../demo && tns plugin add ../src && cd ../src"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/govi2010/nativescript-social-login/issues"
+  },
+  "homepage": "https://github.com/govi2010/nativescript-social-login",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "babel-traverse": "6.25.0",
+    "babel-types": "6.25.0",
+    "babylon": "6.17.3",
+    "lazy": "1.0.11",
+    "nativescript-dev-typescript": "~0.6.0",
+    "tns-core-modules": "3.4.0",
+    "tns-platform-declarations": "^3.4.0",
+    "tslint": "~5.8.0",
+    "typescript": "~2.4.2"
+  }
 }

@@ -113,6 +113,18 @@
   <key>FacebookDisplayName</key>
   <string>Cheefo nativescript test</string>
 	<!-- FACEBOOK END -->
+	<key>LIAppId</key>
+    <string>{YOUR_LINKEDIN_APPID}</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>li{YOUR_LINKEDIN_SECREAT}</string>
+            </array>
+        </dict>
+    </array>
 
+	
 </dict>
 </plist>

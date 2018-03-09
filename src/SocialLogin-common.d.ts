@@ -61,6 +61,7 @@ export interface IInitializationResult {
     facebook: IInitializationResultType;
     google: IInitializationResultType;
     twitter: IInitializationResultType;
+    linkedin: IInitializationResultType;
 }
 /**
  * Describes an object that stores configuration for initialization.
@@ -135,6 +136,26 @@ export interface IConfig {
          */
         secret?: string;
     };
+    linkedin: {
+        /**
+         * Initialize Twitter or not. Default: (true)
+         */
+        initialize?: boolean;
+        /**
+         * The client Id.
+         */
+        clientId?: string;
+        /**
+         * The client Secret.
+         */
+        clientSecret?: string;
+        /**
+         * The client Secret.
+         */
+        state?: string;
+        permissions?: string[];
+        redirectUri?: string;
+    };
 }
 export declare type ILoginConfiguration = Partial<IConfig>;
 /**
@@ -161,6 +182,7 @@ export declare enum LoginResultType {
 export declare const LOGTAG_INIT_ENV = "initEnvironment()";
 export declare const LOGTAG_LOGIN_WITH_FB = "loginWithFacebook()";
 export declare const LOGTAG_LOGIN_WITH_GOOGLE = "loginWithGoogle()";
+export declare const LOGTAG_LOGIN_WITH_LINKEDIN = "loginWithLinkedIn()";
 export declare abstract class Social {
     protected Config: ILoginConfiguration;
     protected _getLoggers: () => ILogger[];
@@ -170,8 +192,11 @@ export declare abstract class Social {
     abstract loginWithTwitter(callback: (result: Partial<ILoginResult>) => void): any;
     abstract loginWithGoogle(callback: (result: Partial<ILoginResult>) => void): any;
     abstract loginWithFacebook(callback: (result: Partial<ILoginResult>) => void): any;
+    abstract loginWithLinkedIn(callback: (result: Partial<ILoginResult>) => void): any;
+    abstract logoutWithGoogle(callback: (result: Partial<ILoginResult>) => void): any;
     protected logMsg(msg: any, tag?: string): void;
     protected logResult(resultCtx: any, tag: any): void;
     initEnvironment(config: ILoginConfiguration, getLoggers: () => ILogger[]): IInitializationResult;
     loginWithProvider(provider: string, callback: (result: Partial<ILoginResult>) => void): void;
+    logoutWithProvider(provider: string, callback: (result: Partial<ILoginResult>) => void): void;
 }

@@ -19,7 +19,6 @@
             
             <Button text="Save settings"
                     tap="{{ saveSettings }}" />
-            
             <Label verticalAlignment="stretch"
                    text="{{ initResultLog }}"
                    textWrap="true" />
@@ -30,6 +29,7 @@
      <TabViewItem title="Buttons">
        <TabViewItem.view>
           <StackLayout className="mjk-buttons">
+          <Button text="logout" tap="{{  }}" />
             <!-- Facebook login -->
             <Image src="~/img/Vk9SO.png"
                    visibility="{{ initResult &amp;&amp; initResult.facebook.isInitialized ? 'visible' : 'collapsed' }}"
@@ -39,6 +39,10 @@
             <Image src="~/img/XzoRm.png"
                    visibility="{{ initResult &amp;&amp; initResult.google.isInitialized ? 'visible' : 'collapsed' }}"
                    tap="{{ loginWithGoogle }}" />
+
+            <Image src="~/img/linkedin.png"
+                   visibility="{{ initResult &amp;&amp; initResult.linkedin.isInitialized ? 'visible' : 'collapsed' }}"
+                   tap="{{ loginWithLinkedin }}" />
 
             <GridLayout rows="auto,*" columns="*"
                         horizontalAlignment="stretch" verticalAlignment="stretch"

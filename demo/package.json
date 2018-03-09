@@ -9,13 +9,13 @@
       "version": "3.4.0"
     },
     "tns-android": {
-      "version": "3.4.0"
+      "version": "3.4.2"
     }
   },
   "dependencies": {
-    "nativescript-social-login": "file:///Users/apple/Desktop/NS_PLAY/nativescript-social-login/plugin",
-    "tns-core-modules": "3.4.0",
-    "tns-platform-declarations": "^3.4.0"
+    "nativescript-social-login-linkedin": "file:..\\src",
+    "tns-core-modules": "~3.4.0",
+    "tns-platform-declarations": "~3.4.0"
   },
   "devDependencies": {
     "babel-traverse": "6.25.0",

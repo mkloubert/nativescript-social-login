@@ -40,9 +40,10 @@ const actionRunnable = java.lang.Runnable.extend({
 export class SocialLogin extends Social {
     private _rcGoogleSignIn: number = 597; // < 16 bits
     private _rcFacebookSignIn: number = 64206; // < 16 bits
+    private _rcLinkedInSignIn: number = 3672; // < 16 bits
     private _fbCallbackManager;
     private _fbLoginManager;
-
+    private _googleClient;
     init(result: IInitializationResult): IInitializationResult {
         this.logMsg("activity: " + this.Config.activity, LOGTAG_INIT_ENV);
 
@@ -54,7 +55,9 @@ export class SocialLogin extends Social {
         if (this.Config.google.initialize) {
             result = this.initGoogle(result);
         }
-
+        if (this.Config.linkedin.initialize) {
+            result = this.initLinkedIn(result);
+        }
         // Facebook
         if (this.Config.facebook.initialize) {
             result = this.initFacebook(result);
@@ -68,7 +71,8 @@ export class SocialLogin extends Social {
 
         if (!isNullOrUndefined(this.Config.activity)) {
             const onLoginResult = ({ requestCode, resultCode, intent }: AndroidActivityResultEventData) => {
-                if (requestCode === this._rcGoogleSignIn || requestCode === this._rcFacebookSignIn) {
+                if (requestCode === this._rcGoogleSignIn || requestCode === this._rcFacebookSignIn || requestCode === this._rcLinkedInSignIn) {
+                    // LISessionManager.getInstance(getApplicationContext()).onActivityResult(this, requestCode, resultCode, data);
                     const resultCtx: Partial<ILoginResult> = {};
                     let callback = this._loginCallback;
                     let activityResultHandled = false;
@@ -123,6 +127,8 @@ export class SocialLogin extends Social {
 
                             activityResultHandled = true;
                             callback = void 0;
+                        } else if (requestCode === this._rcLinkedInSignIn) {
+                            com.linkedin.platform.LISessionManager.getInstance(this.Config.activity.getApplicationContext()).onActivityResult(this.Config.activity, requestCode, resultCode, intent);
                         }
                     } catch (e) {
                         this.logMsg("[ERROR] " + e, LOGTAG_ON_ACTIVITY_RESULT);
@@ -173,7 +179,12 @@ export class SocialLogin extends Social {
             throw e;
         }
     }
-
+    logoutWithGoogle(callback: (result: Partial<ILoginResult>) => void) {
+        if (this._googleClient.isConnected()) {
+            com.google.android.gms.auth.apiAuth.GoogleSignInApi.signOut(this._googleClient);
+            callback(null);
+        }
+    }
     loginWithGoogle(callback: (result: Partial<ILoginResult>) => void) {
         try {
             let optionBuilder = new com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -195,7 +206,7 @@ export class SocialLogin extends Social {
                 .Builder(this.Config.activity.getApplicationContext())
                 .addApi(com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API, optionBuilder.build())
                 .build();
-
+            this._googleClient = client;
             this._loginCallback = callback;
 
             const uiAction = new actionRunnable();
@@ -259,7 +270,42 @@ export class SocialLogin extends Social {
             });
         }
     }
-
+    loginWithLinkedIn(callback: (result: Partial<ILoginResult>) => void) {
+        let data = [com.linkedin.platform.utils.Scope.R_BASICPROFILE, com.linkedin.platform.utils.Scope.R_EMAILADDRESS];
+        com.linkedin.platform.LISessionManager.getInstance(this.Config.activity.getApplicationContext()).init(
+            this.Config.activity,
+            com.linkedin.platform.utils.Scope.build(data),
+            new com.linkedin.platform.listeners.AuthListener({
+                onAuthSuccess: () => {
+                    console.log("Success");
+                    let sessionManager = com.linkedin.platform.LISessionManager.getInstance(this.Config.activity.getApplicationContext());
+                    let session = sessionManager.getSession();
+                    let accessTokenValid = session.isValid();
+                    callback({
+                        authCode: session.getAccessToken().toString(),
+                        code: LoginResultType.Success,
+                        displayName: session.getAccessToken().toString(),
+                        error: '',
+                        id: session.getAccessToken().toString(),
+                        userToken: session.getAccessToken().toString()
+                    });
+                    console.log(session.getAccessToken().toString());
+                    // setUpdateState();
+                    // Toast.makeText(getApplicationContext(), "success" + LISessionManager.getInstance(getApplicationContext()).getSession().getAccessToken().toString(), Toast.LENGTH_LONG).show();
+                },
+                onAuthError: (error) => {
+                    console.log("Error: " + error.toString());
+                    callback({
+                        code: LoginResultType.Failed,
+                        error: error.toString()
+                    });
+                    // setUpdateState();
+                    // ((TextView) findViewById(R.id.at)).setText(error.toString());
+                    // Toast.makeText(getApplicationContext(), "failed " + error.toString(), Toast.LENGTH_LONG).show();
+                }
+            })
+            , true);
+    }
     private initFacebook(result: IInitializationResult): IInitializationResult {
         try {
             com.facebook.FacebookSdk.sdkInitialize(this.Config.activity.getApplicationContext());
@@ -429,4 +475,18 @@ export class SocialLogin extends Social {
         }
         return result;
     }
+    private initLinkedIn(result: IInitializationResult): IInitializationResult {
+        try {
+            // Strange?!s
+
+
+            result.linkedin.isInitialized = true;
+        } catch (e) {
+            this.logMsg("[ERROR] init.linkedin: " + e, LOGTAG_INIT_ENV);
+
+            result.linkedin.error = e;
+        }
+        return result;
+    }
+
 }

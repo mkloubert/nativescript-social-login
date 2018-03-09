@@ -83,6 +83,7 @@ export interface IInitializationResult {
     facebook: IInitializationResultType;
     google: IInitializationResultType;
     twitter: IInitializationResultType;
+    linkedin: IInitializationResultType;
 }
 
 /**
@@ -169,6 +170,29 @@ export interface IConfig {
          */
         secret?: string;
     };
+    linkedin: {
+        /**
+         * Initialize Twitter or not. Default: (true)
+         */
+        initialize?: boolean,
+        /**
+         * The client Id.
+         */
+        clientId?: string,
+
+        /**
+         * The client Secret.
+         */
+        clientSecret?: string,
+
+        /**
+         * The client Secret.
+         */
+        state?: string,
+
+        permissions?: string[],
+        redirectUri?: string
+    };
 }
 
 export type ILoginConfiguration = Partial<IConfig>;
@@ -204,6 +228,7 @@ import { merge } from "./utils";
 export const LOGTAG_INIT_ENV = "initEnvironment()";
 export const LOGTAG_LOGIN_WITH_FB = "loginWithFacebook()";
 export const LOGTAG_LOGIN_WITH_GOOGLE = "loginWithGoogle()";
+export const LOGTAG_LOGIN_WITH_LINKEDIN = "loginWithLinkedIn()";
 
 export abstract class Social {
     protected Config: ILoginConfiguration;
@@ -228,7 +253,14 @@ export abstract class Social {
             key: void 0,
             secret: void 0
         },
-        onActivityResult: void 0
+        onActivityResult: void 0,
+        linkedin: {
+            initialize: true,
+            clientId: "",
+            clientSecret: "",
+            state: "",
+            permissions: []
+        },
     };
 
     abstract init(result: IInitializationResult): IInitializationResult;
@@ -236,10 +268,10 @@ export abstract class Social {
         callback: (result: Partial<ILoginResult>) => void
     );
     abstract loginWithGoogle(callback: (result: Partial<ILoginResult>) => void);
-    abstract loginWithFacebook(
-        callback: (result: Partial<ILoginResult>) => void
-    );
+    abstract loginWithFacebook(callback: (result: Partial<ILoginResult>) => void);
+    abstract loginWithLinkedIn(callback: (result: Partial<ILoginResult>) => void);
 
+    abstract logoutWithGoogle(callback: (result: Partial<ILoginResult>) => void);
     protected logMsg(msg, tag = "") {
         try {
             const loggers = this._getLoggers();
@@ -273,19 +305,11 @@ export abstract class Social {
         this._getLoggers = getLoggers;
 
         this.Config = merge(this.defaultConfig, config);
+        this.logMsg("initialize.google: " + this.Config.google.initialize, LOGTAG_INIT_ENV);
+        this.logMsg("initialize.facebook: " + this.Config.facebook.initialize, LOGTAG_INIT_ENV);
+        this.logMsg("initialize.twitter: " + this.Config.twitter.initialize, LOGTAG_INIT_ENV);
+        this.logMsg("initialize.linkedin: " + this.Config.linkedin.initialize, LOGTAG_INIT_ENV);
 
-        this.logMsg(
-            "initialize.google: " + this.Config.google.initialize,
-            LOGTAG_INIT_ENV
-        );
-        this.logMsg(
-            "initialize.facebook: " + this.Config.facebook.initialize,
-            LOGTAG_INIT_ENV
-        );
-        this.logMsg(
-            "initialize.twitter: " + this.Config.twitter.initialize,
-            LOGTAG_INIT_ENV
-        );
 
         const result = this.init(<IInitializationResult>{
             facebook: {
@@ -295,22 +319,18 @@ export abstract class Social {
                 isInitialized: true
             },
             twitter: {
-                isInitialized: undefined
-            }
+                isInitialized: undefined,
+            },
+            linkedin: {
+                isInitialized: true
+            },
         });
 
-        this.logMsg(
-            "google.isInitialized: " + result.google.isInitialized,
-            LOGTAG_INIT_ENV
-        );
-        this.logMsg(
-            "facebook.isInitialized: " + result.facebook.isInitialized,
-            LOGTAG_INIT_ENV
-        );
-        this.logMsg(
-            "twitter.isInitialized: " + result.twitter.isInitialized,
-            LOGTAG_INIT_ENV
-        );
+        this.logMsg("google.isInitialized: " + result.google.isInitialized, LOGTAG_INIT_ENV);
+        this.logMsg("facebook.isInitialized: " + result.facebook.isInitialized, LOGTAG_INIT_ENV);
+        this.logMsg("twitter.isInitialized: " + result.twitter.isInitialized, LOGTAG_INIT_ENV);
+        this.logMsg("linkedin.isInitialized: " + result.linkedin.isInitialized, LOGTAG_INIT_ENV);
+
 
         return result;
     }
@@ -346,6 +366,49 @@ export abstract class Social {
             /* case "twitter":
                 this.loginWithTwitter(callback);
                 break; */
+            case "linkedin":
+                this.loginWithLinkedIn(callback);
+                break;
+
+            default:
+                throw `Provider '${provider}' is NOT supported!`;
+        }
+    }
+    
+    logoutWithProvider(
+        provider: string,
+        callback: (result: Partial<ILoginResult>) => void
+    ) {
+        if (isNullOrUndefined(provider)) {
+            provider = "";
+        }
+
+        provider = ("" + provider).toLowerCase().trim();
+
+        this.logMsg(`Provider: ${provider}`);
+
+        switch (provider) {
+            case "":
+            case "google": {
+                this.logMsg("Will use Google sign in...");
+                this.logoutWithGoogle(callback);
+                break;
+            }
+
+//             case "facebook":
+//             case "fb": {
+//                 this.logMsg("Will use Facebook SDK...");
+//                 this.logoutWithFacebook(callback);
+//                 break;
+//             }
+
+            // TODO
+            /* case "twitter":
+                this.loginWithTwitter(callback);
+//                 break; */
+//             case "linkedin":
+//                 this.WithLinkedIn(callback);
+//                 break;
 
             default:
                 throw `Provider '${provider}' is NOT supported!`;

@@ -5,7 +5,7 @@ var Observable = require("data/observable").Observable;
 var SocialLogin = require("nativescript-social-login");
 var TypeUtils = require("utils/types");
 
-SocialLogin.addLogger(function(msg, tag) {
+SocialLogin.addLogger(function (msg, tag) {
     console.log("[nativescript-social-login] " + tag + " >> " + msg);
 });
 
@@ -13,22 +13,19 @@ function createViewModel() {
     var viewModel = new Observable();
 
     viewModel.set("googleServerClientId",
-                  AppSettings.getString("googleServerClientId"));
+        AppSettings.getString("googleServerClientId"));
 
     if (Application.android) {
         var activity = Application.android.foregroundActivity ||
-                       Application.android.startActivity;
+            Application.android.startActivity;
 
         if (!TypeUtils.isNullOrUndefined(activity)) {
             var appCtx = activity.getApplicationContext();
-
             var androidResources = appCtx.getResources();
-
             // facebook APP ID
             try {
-                viewModel.facebookAppId = androidResources.getString(org.nativescript.NativescriptSocialLoginDemo.R.string.facebook_app_id);
-            }
-            catch (e) {
+                viewModel.facebookAppId = androidResources.getString(com.giddh.accounts.R.string.facebook_app_id);
+            } catch (e) {
                 console.log("[ERROR] createViewModel() >> facebookAppId: " + e);
             }
 
@@ -40,7 +37,7 @@ function createViewModel() {
         viewModel.facebookAppId = NSBundle.mainBundle.objectForInfoDictionaryKey("FacebookAppID");
     }
 
-    viewModel.initialize = function(args) {
+    viewModel.initialize = function (args) {
         var btn = args.object;
         var tabView = btn.page.getViewById("mjk-tabview");
 
@@ -48,85 +45,102 @@ function createViewModel() {
 
         try {
             var googleServerClientId = viewModel.get("googleServerClientId");
-
             var result = SocialLogin.init({
-                google: {
-                    serverClientId: googleServerClientId
-                },
-                facebook: {
-                    clearSession: false
+                linkedin: {
+                    clientId: '{{youClientID}}',
+                    clientSecret: '{{yourClientSecret}}',
+                    permissions: ["r_basicprofile", "r_emailaddress"],
+                    state: '',
+                    redirectUri: "{{yourredirectURL}}"
                 }
             });
 
             viewModel.set("initResult", result);
 
-            var log = "Facebook initialize?: " + result.facebook.isInitialized + "\n";
-            if (result.facebook.error) {
-                log += "Facebook error: " + result.facebook.error + "\n";
-            }
+            // var log = "Facebook initialize?: " + result.facebook.isInitialized + "\n";
+            // if (result.facebook.error) {
+            //     log += "Facebook error: " + result.facebook.error + "\n";
+            // }
 
-            log += "\n";
+            // log += "\n";
 
-            log += "Google initialize?: " + result.google.isInitialized + "\n";
-            if (result.google.error) {
-                log += "Google error: " + result.google.error + "\n";
-            }
+            // log += "Google initialize?: " + result.google.isInitialized + "\n";
+            // if (result.google.error) {
+            //     log += "Google error: " + result.google.error + "\n";
+            // }
 
-            if (!result.google.error || !result.facebook.error) {
-                tabView.selectedIndex = 1;
-            }
+            // if (!result.google.error || !result.facebook.error) {
+            //     tabView.selectedIndex = 1;
+            // }
 
             viewModel.set("initResultLog", log);
-        }
-        catch (e) {
+        } catch (e) {
             viewModel.set("initResultLog", "[ERROR]: " + e);
         }
-    };
 
-    viewModel.saveSettings = function() {
+    };
+    viewModel.saveSettings = function () {
         try {
             // googleServerClientId
             AppSettings.setString("googleServerClientId",
-                                  viewModel.get("googleServerClientId"));
-        }
-        catch (e) {
+                viewModel.get("googleServerClientId"));
+        } catch (e) {
             console.log("[ERROR] viewModel.saveSettings(): " + e);
         }
     };
 
-    viewModel.loginWithFacebook = function() {
+    viewModel.loginWithFacebook = function () {
         try {
-            SocialLogin.loginWithFacebook(function(result) {
+            SocialLogin.loginWithFacebook(function (result) {
                 console.log(result);
                 try {
                     viewModel.set("loginResult", result);
-                }
-                catch (e) {
+                } catch (e) {
                     console.log("[ERROR] viewModel.loginWithFacebook(1): " + e);
                 }
             });
-        }
-        catch (e) {
+        } catch (e) {
             console.log("[ERROR] viewModel.loginWithFacebook(0): " + e);
         }
     }
 
-    viewModel.loginWithGoogle = function() {
+    viewModel.loginWithGoogle = function () {
         try {
-            SocialLogin.loginWithGoogle(function(result) {
+            SocialLogin.loginWithGoogle(function (result) {
                 try {
                     viewModel.set("loginResult", result);
-                }
-                catch (e) {
+                } catch (e) {
                     console.log("[ERROR] viewModel.loginWithGoogle(1): " + e);
                 }
             });
-        }
-        catch (e) {
+        } catch (e) {
             console.log("[ERROR] viewModel.loginWithGoogle(0): " + e);
         }
     }
 
+    viewModel.logoutWithGoogle = function () {
+        try {
+            SocialLogin.logoutWithGoogle(function (result) {
+                try {
+                    viewModel.set("loginResult", result);
+                } catch (e) {
+                    console.log("[ERROR] viewModel.loginWithGoogle(1): " + e);
+                }
+            });
+        } catch (e) {
+            console.log("[ERROR] viewModel.loginWithGoogle(0): " + e);
+        }
+    }
+
+    viewModel.loginWithLinkedin = function () {
+        SocialLogin.loginWithLinkedIn(function (result) {
+            try {
+                viewModel.set("loginResult", result);
+            } catch (e) {
+                console.log("[ERROR] viewModel.loginWithLinkedin(1): " + e);
+            }
+        });
+    }
     return viewModel;
 }
 exports.createViewModel = createViewModel;

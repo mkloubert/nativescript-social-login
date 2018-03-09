@@ -10,25 +10,33 @@ declare var android: any;
 // declare var UIApplication: any;
 // declare var UIApplicationDelegate: any;
 
-declare class UIResponder {};
-declare class UIApplicationDelegate{};
+declare class UIResponder { };
+declare class UIApplicationDelegate { };
 declare class FBSDKApplicationDelegate {
-  static sharedInstance():any;
+  static sharedInstance(): any;
+
 };
+declare class LinkedinSwiftHelper {
+  static shouldHandleUrl(url: string): any;
+  static application(application: any,
+    openURL: any,
+    sourceApplication: any,
+    annotation: any): any;
+}
 
 declare class GGLContext {
-  static sharedInstance():any;
+  static sharedInstance(): any;
 };
 
 declare class GIDSignIn {
-  static sharedInstance():any;
+  static sharedInstance(): any;
 };
 
-declare class FBSDKAppEvents{
+declare class FBSDKAppEvents {
   static activateApp();
 };
-declare class UIApplication {};
-declare class NSDictionary {};
+declare class UIApplication { };
+declare class NSDictionary { };
 
 
 if (application.ios) {
@@ -57,6 +65,14 @@ if (application.ios) {
     applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation) {
       const fcbDelegate = FBSDKApplicationDelegate.sharedInstance().applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation); // facebook login delegate
       const gglDelegate = GIDSignIn.sharedInstance().handleURLSourceApplicationAnnotation(url, sourceApplication, annotation); // google login delegate
+      const linkinDelegate = false;
+      if (LinkedinSwiftHelper.shouldHandleUrl(url)) {
+        let linkinDelegate = LinkedinSwiftHelper.application(application,
+          url,
+          sourceApplication,
+          annotation
+        );
+      }
 
       return fcbDelegate || gglDelegate;
     }

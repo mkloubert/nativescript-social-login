@@ -9,3 +9,7 @@
 /src/hooks
 *.log
 .DS_Store
+
+.vscode/settings.json
+demo/giddh.keystore
+.idea/*

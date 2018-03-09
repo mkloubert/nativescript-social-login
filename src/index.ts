@@ -60,6 +60,10 @@ export function login(provider: string, callback: (result: ILoginResult) => void
     Login.loginWithProvider(provider.toLowerCase().trim(), callback);
 }
 
+export function logout(provider: string, callback: (result: ILoginResult) => void) {
+    Login.logoutWithProvider(provider.toLowerCase().trim(), callback);
+}
+
 /**
  * Logs in with Facebook auth API.
  *
@@ -78,6 +82,10 @@ export function loginWithGoogle(callback: (result: ILoginResult) => void) {
     login("google", callback);
 }
 
+export function logoutWithGoogle(callback: (result: ILoginResult) => void) {
+    logout("google", callback);
+}
+
 /**
  * Logs in with Twitter auth API.
  *
@@ -85,6 +93,9 @@ export function loginWithGoogle(callback: (result: ILoginResult) => void) {
  */
 export function loginWithTwitter(callback: (result: ILoginResult) => void) {
     login("twitter", callback);
+}
+export function loginWithLinkedIn(callback: (result: ILoginResult) => void) {
+    login("linkedin", callback);
 }
 
 // Export neccessary Interfaces

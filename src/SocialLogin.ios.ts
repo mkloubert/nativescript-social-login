@@ -21,6 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 import { ios } from "tns-core-modules/application/application";
+import * as utilModule from "tns-core-modules/utils/utils";
+// var utilsModule = require("tns-core-modules/utils/utils");
 import { IInitializationResult, ILoginResult, LoginResultType, Social, LOGTAG_LOGIN_WITH_GOOGLE } from "./SocialLogin-common";
 
 declare const FBSDKGraphRequest, FBSDKLoginManager, GIDSignIn, GIDSignInDelegate, GIDSignInUIDelegate;
@@ -37,6 +39,9 @@ export class SocialLogin extends Social {
 	private googleSignIn = null;
 	private googleCancelCallback;
 	private googleSuccessCallback;
+
+	private linkedinHelper: LinkedinSwiftHelper = null;
+
 
 	public init(result: IInitializationResult): IInitializationResult {
 		if (this.Config.facebook) {
@@ -55,6 +60,7 @@ export class SocialLogin extends Social {
 		}
 
 		if (this.Config.google) {
+
 			this.googleSignIn = GIDSignIn.sharedInstance();
 			this.googleSignIn.shouldFetchBasicProfile = this.Config.google.shouldFetchBasicProfile;
 			this.googleSignIn.scopes = this.Config.google.scopes;
@@ -66,6 +72,18 @@ export class SocialLogin extends Social {
 			}
 
 			result.google.isInitialized = true;
+		}
+		if (this.Config.linkedin) {
+			let linkedinSwiftConfiguration = new LinkedinSwiftConfiguration({
+				clientId: this.Config.linkedin.clientId,
+				clientSecret: this.Config.linkedin.clientSecret,
+				state: 'linkedin' + NSDate.date().timeIntervalSince1970,
+				permissions: utilModule.ios.collections.jsArrayToNSArray(this.Config.linkedin.permissions),
+				redirectUrl:this.Config.linkedin.redirectUri //
+			});
+			// utilModule.ios.
+			this.linkedinHelper = new LinkedinSwiftHelper({ configuration: linkedinSwiftConfiguration });
+			result.linkedin.isInitialized = true;
 		}
 
 		return result;
@@ -269,6 +287,7 @@ export class SocialLogin extends Social {
 		return new MySignInDelegate();
 	}
 
+
 	public loginWithGoogle(callback: (result: Partial<ILoginResult>) => void) {
 
 		const invokeLoginCallbackForGoogle = resultCtx => {
@@ -326,5 +345,39 @@ export class SocialLogin extends Social {
 	}
 
 	public loginWithTwitter(callback: (result: Partial<ILoginResult>) => void) { }
-}
+	public logoutWithGoogle(callback: (result: Partial<ILoginResult>) => void) { }
+	public loginWithLinkedIn(callback: (result: Partial<ILoginResult>) => void) {
 
+		this.linkedinHelper.authorizeSuccessErrorCancel((lsToken) => {
+			console.log(JSON.stringify(lsToken.accessToken));
+			if (!!callback) {
+				const delegate = this.createSignInDelegate();
+
+				callback({
+					authCode: lsToken.accessToken,
+					code: LoginResultType.Success,
+					displayName: lsToken.accessToken,
+					error: '',
+					id: lsToken.accessToken,
+					userToken: lsToken.accessToken
+				})
+			}
+
+		}, (error) => {
+			console.log(JSON.stringify(error));
+			// Void in
+			// Encounter error: error.localizedDescription
+			callback({
+				code: LoginResultType.Failed,
+				error: error
+			});
+		}, () => {
+			console.log("User Cancled");
+			callback({
+				code: LoginResultType.Failed,
+				error: 'user cancled'
+			});
+		});
+	}
+
+}
