@@ -1,7 +1,7 @@
 {
     "name": "nativescript-social-login",
     "description": "NativeScript plugin for social (token based) log-ins.",
-    "version": "3.0.8",
+    "version": "3.0.9",
     "main": "index.js",
     "typings": "index.d.ts",
     "nativescript": {
@@ -61,10 +61,12 @@
         "dev": "tsc -w",
         "next": "npm publish --tag next",
         "lint": "tslint --project tsconfig.json --config tslint.json",
+        "plugin.link":
+            "npm link && cd ../demo && npm link nativescript-social-login && cd ../src",
         "demo.android":
-            "npm run preparedemo && cd ../demo && tns platform remove android && tns run android --justlaunch",
+            "npm run preparedemo && cd ../demo && tns platform remove android && tns run android --syncAllFiles",
         "demo.ios":
-            "npm run preparedemo && cd ../demo && tns run ios --emulator",
+            "npm run preparedemo && cd ../demo && tns run ios --syncAllFiles",
         "demo.ios.device":
             "npm run preparedemo && cd ../demo && tns platform remove ios && tns run ios",
         "development.setup":
