@@ -21,310 +21,358 @@
 // DEALINGS IN THE SOFTWARE.
 
 import { ios } from "tns-core-modules/application/application";
-import { IInitializationResult, ILoginResult, LoginResultType, Social, LOGTAG_LOGIN_WITH_GOOGLE } from "./SocialLogin-common";
+import {
+    IInitializationResult,
+    ILoginResult,
+    LoginResultType,
+    Social,
+    LOGTAG_LOGIN_WITH_GOOGLE
+} from "./SocialLogin-common";
 
-declare const FBSDKGraphRequest, FBSDKLoginManager, GIDSignIn, GIDSignInDelegate, GIDSignInUIDelegate;
+declare const FBSDKGraphRequest,
+    FBSDKLoginManager,
+    GIDSignIn,
+    GIDSignInDelegate,
+    GIDSignInUIDelegate;
 
 const LOGTAG_FB_LOGIN_MGR = "facebookLoginManager";
 const LOGTAG_ON_GOOGLE_RESULT = "Google successCallback";
 
 export class SocialLogin extends Social {
-	private _facebookCallbackManager;
-	private facebookLoginManager;
+    private _facebookCallbackManager;
+    private facebookLoginManager;
 
-	private _googleProfileInfoCallback;
-	private googleFailCallback;
-	private googleSignIn = null;
-	private googleCancelCallback;
-	private googleSuccessCallback;
+    private _googleProfileInfoCallback;
+    private googleFailCallback;
+    private googleSignIn = null;
+    private googleCancelCallback;
+    private googleSuccessCallback;
 
-	public init(result: IInitializationResult): IInitializationResult {
-		if (this.Config.facebook) {
-			this.facebookLoginManager = FBSDKLoginManager.alloc().init();
+    public init(result: IInitializationResult): IInitializationResult {
+        if (this.Config.facebook) {
+            this.facebookLoginManager = FBSDKLoginManager.alloc().init();
 
-			if (this.facebookLoginManager) {
-				if (this.Config.facebook.clearSession) {
-					this.facebookLoginManager.logOut();
-				}
-				if (this.Config.facebook.loginBehavior) {
-					this.facebookLoginManager.loginBehavior = this.Config.facebook.loginBehavior;
-				}
-				result.facebook.isInitialized = true;
-			}
+            if (this.facebookLoginManager) {
+                if (this.Config.facebook.clearSession) {
+                    this.facebookLoginManager.logOut();
+                }
+                if (this.Config.facebook.loginBehavior) {
+                    this.facebookLoginManager.loginBehavior = this.Config.facebook.loginBehavior;
+                }
+                result.facebook.isInitialized = true;
+            }
+        }
 
-		}
+        if (this.Config.google) {
+            this.googleSignIn = GIDSignIn.sharedInstance();
+            this.googleSignIn.shouldFetchBasicProfile = this.Config.google.shouldFetchBasicProfile;
+            this.googleSignIn.scopes = this.Config.google.scopes;
 
-		if (this.Config.google) {
-			this.googleSignIn = GIDSignIn.sharedInstance();
-			this.googleSignIn.shouldFetchBasicProfile = this.Config.google.shouldFetchBasicProfile;
-			this.googleSignIn.scopes = this.Config.google.scopes;
+            // Setting 'googleSignIn.serverClientID' forces retrieval of an offline auth code in iOS.
+            // Set it only if that's what the user is expecting to retrieve.
+            if (
+                this.Config.google.serverClientId &&
+                this.Config.google.isRequestAuthCode
+            ) {
+                this.googleSignIn.serverClientID = this.Config.google.serverClientId;
+            }
 
-			// Setting 'googleSignIn.serverClientID' forces retrieval of an offline auth code in iOS.
-			// Set it only if that's what the user is expecting to retrieve.
-			if (this.Config.google.serverClientId && this.Config.google.isRequestAuthCode) {
-				this.googleSignIn.serverClientID = this.Config.google.serverClientId;
-			}
+            result.google.isInitialized = true;
+        }
 
-			result.google.isInitialized = true;
-		}
+        return result;
+    }
 
-		return result;
-	}
+    public loginWithFacebook(
+        callback: (result: Partial<ILoginResult>) => void
+    ) {
+        const invokeLoginCallbackForFacebook = resultCtx => {
+            resultCtx.provider = "facebook";
 
-	public loginWithFacebook(callback: (result: Partial<ILoginResult>) => void) {
-		const invokeLoginCallbackForFacebook = resultCtx => {
-			resultCtx.provider = "facebook";
+            this.logResult(resultCtx, LOGTAG_FB_LOGIN_MGR);
 
-			this.logResult(resultCtx, LOGTAG_FB_LOGIN_MGR);
+            // tslint:disable-next-line:no-unused-expression
+            callback && callback(resultCtx);
+        };
 
-			// tslint:disable-next-line:no-unused-expression
-			callback && callback(resultCtx);
-		};
+        const failCallback = (error: NSError | string) => {
+            this.logMsg("onError()", LOGTAG_FB_LOGIN_MGR);
 
-		const failCallback = error => {
-			this.logMsg("onError()", LOGTAG_FB_LOGIN_MGR);
+            invokeLoginCallbackForFacebook({
+                code: LoginResultType.Failed,
+                error:
+                    typeof error === "string"
+                        ? error
+                        : error.localizedDescription
+            });
+        };
 
-			invokeLoginCallbackForFacebook({
-				code: LoginResultType.Failed,
-				error: error,
-			});
-		};
+        const cancelCallback = () => {
+            this.logMsg("onCancel()", LOGTAG_FB_LOGIN_MGR);
 
-		const cancelCallback = () => {
-			this.logMsg("onCancel()", LOGTAG_FB_LOGIN_MGR);
+            invokeLoginCallbackForFacebook({
+                code: LoginResultType.Cancelled
+            });
+        };
 
-			invokeLoginCallbackForFacebook({
-				code: LoginResultType.Cancelled,
-			});
-		};
+        const successCallback = result => {
+            let authToken;
+            this.logMsg("onSuccess().onCompleted()", LOGTAG_FB_LOGIN_MGR);
 
-		const successCallback = result => {
-			let authToken;
-			this.logMsg("onSuccess().onCompleted()", LOGTAG_FB_LOGIN_MGR);
+            const resultFn = (connection, theResult, handler) => {
+                let code = LoginResultType.Success;
+                let err;
+                let usrToken;
+                let displayName;
+                let firstName;
+                let lastName;
+                let photo;
+                let id;
 
-			const resultFn = (connection, theResult, handler) => {
-				let code = LoginResultType.Success;
-				let err;
-				let usrToken;
-				let displayName;
-				let firstName;
-				let lastName;
-				let photo;
-				let id;
+                try {
+                    // ID
+                    id = theResult.objectForKey("id");
+                    // email
+                    usrToken = theResult.objectForKey("email");
 
-				try {
-					// ID
-					id = theResult.objectForKey("id");
-					// email
-					usrToken = theResult.objectForKey("email");
+                    // name
+                    displayName = theResult.objectForKey("name");
 
-					// name
-					displayName = theResult.objectForKey("name");
+                    if (theResult.objectForKey("first_name")) {
+                        firstName = theResult.objectForKey("first_name");
+                    }
 
-					if (theResult.objectForKey("first_name")) {
-						firstName = theResult.objectForKey("first_name");
-					}
+                    if (theResult.objectForKey("last_name")) {
+                        lastName = theResult.objectForKey("last_name");
+                    }
 
-					if (theResult.objectForKey("last_name")) {
-						lastName = theResult.objectForKey("last_name");
-					}
+                    // photo
+                    if (
+                        theResult.objectForKey("picture") &&
+                        theResult
+                            .objectForKey("picture")
+                            .objectForKey("data") &&
+                        theResult
+                            .objectForKey("picture")
+                            .objectForKey("data")
+                            .objectForKey("url")
+                    ) {
+                        photo = theResult
+                            .objectForKey("picture")
+                            .objectForKey("data")
+                            .objectForKey("url");
+                    }
+                } catch (e) {
+                    this.logMsg(
+                        "[ERROR] onSuccess().onCompleted(): " + e,
+                        LOGTAG_FB_LOGIN_MGR
+                    );
 
-					// photo
-					if (
-						theResult.objectForKey("picture") &&
-						theResult.objectForKey("picture").objectForKey("data") &&
-						theResult.objectForKey("picture").objectForKey("data").objectForKey("url")
-					) {
-						photo = theResult.objectForKey("picture").objectForKey("data").objectForKey("url");
-					}
+                    code = LoginResultType.Exception;
+                    err = e;
+                }
+                if (code !== LoginResultType.Exception) {
+                    invokeLoginCallbackForFacebook(<ILoginResult>{
+                        authToken: authToken,
+                        code: code,
+                        displayName: displayName,
+                        firstName: firstName,
+                        lastName: lastName,
+                        error: err,
+                        id: id,
+                        photo: photo,
+                        userToken: usrToken
+                    });
+                } else {
+                    invokeLoginCallbackForFacebook(<ILoginResult>{
+                        code: code,
+                        error: err
+                    });
+                }
+            };
 
-				} catch (e) {
-					this.logMsg("[ERROR] onSuccess().onCompleted(): " + e, LOGTAG_FB_LOGIN_MGR);
+            authToken = result.token.tokenString;
+            const fbRequest = FBSDKGraphRequest.alloc();
+            fbRequest
+                .initWithGraphPathParametersTokenStringVersionHTTPMethod(
+                    "me",
+                    {
+                        fields:
+                            "id,about,birthday,email,gender,name,first_name,last_name,picture"
+                    },
+                    authToken,
+                    null,
+                    "GET"
+                )
+                .startWithCompletionHandler(resultFn);
+        };
 
-					code = LoginResultType.Exception;
-					err = e;
-				}
-				if (code !== LoginResultType.Exception) {
-					invokeLoginCallbackForFacebook({
-						authToken: authToken,
-						code: code,
-						displayName: displayName,
-						firstName: firstName,
-						lastName: lastName,
-						error: err,
-						id: id,
-						photo: photo,
-						userToken: usrToken,
-					});
-				} else {
-					invokeLoginCallbackForFacebook({
-						code: code,
-						error: err,
-					});
-				}
-			};
+        if (!!callback) {
+            this._facebookCallbackManager = (result, error) => {
+                if (error) {
+                    failCallback(error);
+                    return;
+                }
+                if (!result) {
+                    failCallback("Null error");
+                    return;
+                }
+                if (result.isCancelled) {
+                    cancelCallback();
+                    return;
+                }
+                if (result.token) {
+                    successCallback(result);
+                } else {
+                    failCallback("Could not acquire an access token");
+                    return;
+                }
+            };
+        }
 
-			authToken = result.token.tokenString;
-			const fbRequest = FBSDKGraphRequest.alloc();
-			fbRequest.initWithGraphPathParametersTokenStringVersionHTTPMethod(
-				"me",
-				{ "fields": "id,about,birthday,email,gender,name,first_name,last_name,picture" },
-				authToken,
-				null,
-				"GET"
-			).startWithCompletionHandler(resultFn);
-		};
+        const permissions = ["public_profile", "email"];
 
-		if (!!callback) {
-			this._facebookCallbackManager = (result, error) => {
-				if (error) {
-					failCallback(error);
-					return;
-				}
-				if (!result) {
-					failCallback("Null error");
-					return;
-				}
-				if (result.isCancelled) {
-					cancelCallback();
-					return;
-				}
-				if (result.token) {
-					successCallback(result);
-				} else {
-					failCallback("Could not acquire an access token");
-					return;
-				}
-			};
-		}
+        // this.facebookLoginManager.logInWithPublishPermissionsHandler(permissions, this._facebookCallbackManager);
+        this.facebookLoginManager.logInWithReadPermissionsHandler(
+            permissions,
+            this._facebookCallbackManager
+        );
+    }
 
-		const permissions = ["public_profile", "email"];
+    private createSignInDelegate() {
+        const self = this;
+        class MySignInDelegate extends NSObject {
+            static ObjCProtocols = [GIDSignInDelegate, GIDSignInUIDelegate];
 
-		// this.facebookLoginManager.logInWithPublishPermissionsHandler(permissions, this._facebookCallbackManager);
-		this.facebookLoginManager.logInWithReadPermissionsHandler(permissions, this._facebookCallbackManager);
-	}
+            constructor() {
+                super();
+            }
 
-	private createSignInDelegate() {
-		const self = this;
-		class MySignInDelegate extends NSObject {
-			static ObjCProtocols = [GIDSignInDelegate, GIDSignInUIDelegate];
+            signInDidSignInForUserWithError(signIn, user, error: NSError) {
+                if (error) {
+                    self.googleFailCallback(error);
+                } else {
+                    try {
+                        const resultUser: ILoginResult = {
+                            code: LoginResultType.Success,
+                            userToken: user.profile.email,
+                            firstName: user.profile.givenName,
+                            lastName: user.profile.familyName,
+                            displayName: user.profile.name,
+                            photo: user.profile.imageURLWithDimension(100),
+                            authCode: user.serverAuthCode
+                                ? user.serverAuthCode
+                                : user.authentication.idToken,
+                            id: user.userID
+                        }; // Safe to send to the server // For client-side use only!
 
-			constructor() {
-				super();
-			}
+                        self.googleSuccessCallback(resultUser);
 
-			signInDidSignInForUserWithError(signIn, user, error) {
-				if (error) {
-					self.googleFailCallback(error);
-				} else {
+                        if (!self._googleProfileInfoCallback) {
+                            self.logMsg(
+                                "no callback set",
+                                LOGTAG_ON_GOOGLE_RESULT
+                            );
+                        }
+                    } catch (error) {
+                        self.googleFailCallback(error);
+                    }
+                }
+            }
 
-					try {
-						const resultUser = {
-							userToken: user.profile.email,
-							firstName: user.profile.givenName,
-							lastName: user.profile.familyName,
-							displayName: user.profile.name,
-							authCode: user.serverAuthCode ? user.serverAuthCode : user.authentication.idToken,  // Safe to send to the server
-							id: user.userID, // For client-side use only!
-						};
+            signInDidDisconnectWithUserWithError(signIn, user, error: NSError) {
+                try {
+                    if (error) {
+                        self.googleFailCallback(error);
+                    } else {
+                        // googleSuccessCallback("logOut");
+                        self.googleCancelCallback();
+                    }
+                } catch (error) {
+                    self.googleFailCallback(error);
+                }
+            }
 
-						self.googleSuccessCallback(resultUser);
+            // signInWillDispatchError(signIn, error) {
+            // }
 
-						if (!self._googleProfileInfoCallback) {
-							self.logMsg("no callback set", LOGTAG_ON_GOOGLE_RESULT);
-						}
-					} catch (error) {
-						self.googleFailCallback(error);
-					}
+            signInPresentViewController(signIn, viewController) {
+                const uiview = ios.rootController;
+                uiview.presentViewControllerAnimatedCompletion(
+                    viewController,
+                    true,
+                    null
+                );
+            }
 
-				}
-			}
+            signInDismissViewController(signIn, viewController) {
+                viewController.dismissViewControllerAnimatedCompletion(
+                    true,
+                    null
+                );
+            }
+        }
 
-			signInDidDisconnectWithUserWithError(signIn, user, error) {
-				try {
-					if (error) {
-						self.googleFailCallback(error.localizedDescription);
-					} else {
-						// googleSuccessCallback("logOut");
-						self.googleCancelCallback();
-					}
-				} catch (error) {
-					self.googleFailCallback(error);
-				}
-			}
+        return new MySignInDelegate();
+    }
 
-			// signInWillDispatchError(signIn, error) {
-			// }
+    public loginWithGoogle(callback: (result: Partial<ILoginResult>) => void) {
+        const invokeLoginCallbackForGoogle = (resultCtx: ILoginResult) => {
+            resultCtx.provider = "google";
 
-			signInPresentViewController(signIn, viewController) {
-				const uiview = ios.rootController;
-				uiview.presentViewControllerAnimatedCompletion(viewController, true, null);
-			}
+            this.logResult(resultCtx, LOGTAG_LOGIN_WITH_GOOGLE);
 
-			signInDismissViewController(signIn, viewController) {
-				viewController.dismissViewControllerAnimatedCompletion(true, null);
-			}
-		}
+            // tslint:disable-next-line:no-unused-expression
+            callback && callback(resultCtx);
+        };
 
-		return new MySignInDelegate();
-	}
+        this.googleFailCallback = (error: NSError) => {
+            this.logMsg("onError()", LOGTAG_LOGIN_WITH_GOOGLE);
 
-	public loginWithGoogle(callback: (result: Partial<ILoginResult>) => void) {
+            invokeLoginCallbackForGoogle({
+                code: LoginResultType.Failed,
+                error: error.localizedDescription
+            });
+        };
 
-		const invokeLoginCallbackForGoogle = resultCtx => {
-			resultCtx.provider = "google";
+        this.googleCancelCallback = () => {
+            this.logMsg("onCancel()", LOGTAG_LOGIN_WITH_GOOGLE);
 
-			this.logResult(resultCtx, LOGTAG_LOGIN_WITH_GOOGLE);
+            invokeLoginCallbackForGoogle({
+                code: LoginResultType.Cancelled
+            });
+        };
 
-			// tslint:disable-next-line:no-unused-expression
-			callback && callback(resultCtx);
-		};
+        this.googleSuccessCallback = result => {
+            this.logMsg("onSuccess().onCompleted()", LOGTAG_LOGIN_WITH_GOOGLE);
 
-		this.googleFailCallback = error => {
-			this.logMsg("onError()", LOGTAG_LOGIN_WITH_GOOGLE);
+            invokeLoginCallbackForGoogle({
+                authCode: result.authCode,
+                code: LoginResultType.Success,
+                displayName: result.displayName,
+                photo: result.photo,
+                error: result.error,
+                id: result.id,
+                userToken: result.userToken
+            });
+        };
 
-			invokeLoginCallbackForGoogle({
-				code: LoginResultType.Failed,
-				error: error,
-			});
-		};
+        if (!!callback) {
+            this._googleProfileInfoCallback = callback;
 
-		this.googleCancelCallback = () => {
-			this.logMsg("onCancel()", LOGTAG_LOGIN_WITH_GOOGLE);
+            const delegate = this.createSignInDelegate();
+            if (!this.googleSignIn.delegate) {
+                this.googleSignIn.delegate = delegate;
+            }
+            if (!this.googleSignIn.uiDelegate) {
+                this.googleSignIn.uiDelegate = delegate;
+            }
 
-			invokeLoginCallbackForGoogle({
-				code: LoginResultType.Cancelled,
-			});
-		};
+            this.googleSignIn.signIn();
+        }
+    }
 
-		this.googleSuccessCallback = result => {
-			this.logMsg("onSuccess().onCompleted()", LOGTAG_LOGIN_WITH_GOOGLE);
-
-			invokeLoginCallbackForGoogle({
-				authCode: result.authCode,
-				code: LoginResultType.Success,
-				displayName: result.displayName,
-				error: result.error,
-				id: result.id,
-				userToken: result.userToken,
-			});
-		};
-
-		if (!!callback) {
-			this._googleProfileInfoCallback = callback;
-
-			const delegate = this.createSignInDelegate();
-			if (!this.googleSignIn.delegate) {
-				this.googleSignIn.delegate = delegate;
-			}
-			if (!this.googleSignIn.uiDelegate) {
-				this.googleSignIn.uiDelegate = delegate;
-			}
-
-			this.googleSignIn.signIn();
-		}
-	}
-
-	public loginWithTwitter(callback: (result: Partial<ILoginResult>) => void) { }
+    public loginWithTwitter(
+        callback: (result: Partial<ILoginResult>) => void
+    ) {}
 }
-
