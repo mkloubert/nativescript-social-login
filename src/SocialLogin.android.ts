@@ -40,16 +40,15 @@ declare const com, java;
 
 const LOGTAG_FB_LOGIN_MGR = "com.facebook.login.LoginManager";
 const LOGTAG_ON_ACTIVITY_RESULT = "onActivityResult()";
-class Action {
-    static get runnable() {
-        return java.lang.Runnable.extend({
-            action: undefined,
-            run() {
-                this.action();
-            }
-        });
-    }
-}
+
+const actionRunnable = (function() {
+    return java.lang.Runnable.extend({
+        action: undefined,
+        run() {
+            this.action();
+        }
+    });
+})();
 
 export class SocialLogin extends Social {
     private _rcGoogleSignIn: number = 597; // < 16 bits
@@ -215,7 +214,7 @@ export class SocialLogin extends Social {
         try {
             this._loginCallback = callback;
 
-            let uiAction = new Action.runnable();
+            let uiAction = new actionRunnable();
             uiAction.action = () => {
                 try {
                     this._fbLoginManager.logInWithReadPermissions(
@@ -282,7 +281,7 @@ export class SocialLogin extends Social {
 
             this._loginCallback = callback;
 
-            const uiAction = new Action.runnable();
+            const uiAction = new actionRunnable();
             uiAction.action = () => {
                 try {
                     const signInIntent = com.google.android.gms.auth.api.Auth.GoogleSignInApi.getSignInIntent(
@@ -323,7 +322,7 @@ export class SocialLogin extends Social {
                 this._loginCallback && this._loginCallback(resultCtx);
             };
 
-            const uiAction = new Action.runnable();
+            const uiAction = new actionRunnable();
             uiAction.action = () => {
                 const twitterAuthCfg = new com.twitter.sdk.android.core.TwitterAuthConfig(
                     this.Config.twitter.key,
