@@ -123,9 +123,9 @@ export class SocialLogin extends Social {
                                         resultCtx.id = usrId;
                                     }
 
-                                    const photoUrl = account.getPhotoUrl();
+                                    const photoUrl = <android.net.Uri>account.getPhotoUrl();
                                     if (!isNullOrUndefined(photoUrl)) {
-                                        resultCtx.photo = photoUrl;
+                                        resultCtx.photo = photoUrl.toString();
                                     }
 
                                     resultCtx.authToken = account.getIdToken();
@@ -133,7 +133,6 @@ export class SocialLogin extends Social {
                                     resultCtx.userToken = account.getEmail();
                                     resultCtx.displayName = account.getDisplayName();
                                     resultCtx.firstName = account.getGivenName();
-                                    resultCtx.photo = (<android.net.Uri>account.getPhotoUrl()).toString();
                                     resultCtx.lastName = account.getFamilyName();
                                 } else {
                                     this.logMsg(
