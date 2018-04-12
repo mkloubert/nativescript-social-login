@@ -11,18 +11,9 @@
         "noEmitOnError": true,
         "baseUrl": ".",
         "paths": {
-            "*": [
-                "./node_modules/tns-core-modules/*",
-                "./node_modules/*"
-            ]
+            "*": ["./node_modules/tns-core-modules/*", "./node_modules/*"]
         },
-        "lib": [
-            "es6",
-            "dom"
-        ]
+        "lib": ["es6", "dom"]
     },
-    "exclude": [
-        "node_modules",
-        "platforms"
-    ]
+    "exclude": ["typings", "node_modules", "platforms"]
 }
