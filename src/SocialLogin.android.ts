@@ -33,7 +33,8 @@ import {
     Social,
     LOGTAG_INIT_ENV,
     LOGTAG_LOGIN_WITH_FB,
-    LOGTAG_LOGIN_WITH_GOOGLE
+    LOGTAG_LOGIN_WITH_GOOGLE,
+    LOGTAG_LOGOUT
 } from "./SocialLogin-common";
 
 declare const com, java;
@@ -51,10 +52,11 @@ const actionRunnable = (function() {
 })();
 
 export class SocialLogin extends Social {
+    private _googleClient: any; // com.google.android.gms.common.api.GoogleApiClient
     private _rcGoogleSignIn: number = 597; // < 16 bits
     private _rcFacebookSignIn: number = 64206; // < 16 bits
-    private _fbCallbackManager;
-    private _fbLoginManager;
+    private _fbCallbackManager: any; // com.facebook.CallbackManager
+    private _fbLoginManager: any; // com.facebook.login.LoginManager
 
     init(result: IInitializationResult): IInitializationResult {
         this.logMsg("activity: " + this.Config.activity, LOGTAG_INIT_ENV);
@@ -242,49 +244,23 @@ export class SocialLogin extends Social {
 
     loginWithGoogle(callback: (result: Partial<ILoginResult>) => void) {
         try {
-            let optionBuilder = new com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(
-                com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN
-            )
-                .requestEmail()
-                .requestProfile();
-
-            if (!isNullOrUndefined(this.Config.google.serverClientId)) {
-                if (!this.Config.google.isRequestAuthCode) {
-                    this.logMsg(
-                        "Will request ID token",
-                        LOGTAG_LOGIN_WITH_GOOGLE
-                    );
-                    optionBuilder = optionBuilder.requestIdToken(
-                        this.Config.google.serverClientId
-                    );
-                } else {
-                    this.logMsg(
-                        "Will request server auth code",
-                        LOGTAG_LOGIN_WITH_GOOGLE
-                    );
-                    optionBuilder = optionBuilder.requestServerAuthCode(
-                        this.Config.google.serverClientId,
-                        false
-                    );
-                }
+            if (!this._googleClient.isConnected()) {
+                this.logMsg(
+                    "Google is not connected. Reconnecting... ",
+                    LOGTAG_LOGIN_WITH_GOOGLE
+                );
+                this._googleClient.connect(
+                    com.google.android.gms.common.api.GoogleApiClient
+                        .SIGN_IN_MODE_OPTIONAL
+                );
             }
-
-            const client = new com.google.android.gms.common.api.GoogleApiClient.Builder(
-                this.Config.activity.getApplicationContext()
-            )
-                .addApi(
-                    com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API,
-                    optionBuilder.build()
-                )
-                .build();
-
             this._loginCallback = callback;
 
             const uiAction = new actionRunnable();
             uiAction.action = () => {
                 try {
                     const signInIntent = com.google.android.gms.auth.api.Auth.GoogleSignInApi.getSignInIntent(
-                        client
+                        this._googleClient
                     );
                     this.Config.activity.startActivityForResult(
                         signInIntent,
@@ -567,11 +543,87 @@ export class SocialLogin extends Social {
         try {
             // Strange?!
             result.google.isInitialized = true;
+            let optionBuilder = new com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(
+                com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN
+            )
+                .requestEmail()
+                .requestProfile();
+
+            if (!isNullOrUndefined(this.Config.google.serverClientId)) {
+                if (!this.Config.google.isRequestAuthCode) {
+                    this.logMsg(
+                        "Will request ID token",
+                        LOGTAG_LOGIN_WITH_GOOGLE
+                    );
+                    optionBuilder = optionBuilder.requestIdToken(
+                        this.Config.google.serverClientId
+                    );
+                } else {
+                    this.logMsg(
+                        "Will request server auth code",
+                        LOGTAG_LOGIN_WITH_GOOGLE
+                    );
+                    optionBuilder = optionBuilder.requestServerAuthCode(
+                        this.Config.google.serverClientId,
+                        false
+                    );
+                }
+            }
+
+            this._googleClient = new com.google.android.gms.common.api.GoogleApiClient.Builder(
+                this.Config.activity.getApplicationContext()
+            )
+                .addApi(
+                    com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API,
+                    optionBuilder.build()
+                )
+                .build();
+            this._googleClient.connect(
+                com.google.android.gms.common.api.GoogleApiClient
+                    .SIGN_IN_MODE_OPTIONAL
+            );
         } catch (e) {
             this.logMsg("[ERROR] init.google: " + e, LOGTAG_INIT_ENV);
 
             result.google.error = e;
         }
         return result;
+    }
+
+    logOut(callback: () => void) {
+        this.logMsg("Starting Logout", LOGTAG_LOGOUT);
+        try {
+            // Google Logout
+            if (this._googleClient.isConnected()) {
+                const signOut = com.google.android.gms.auth.api.Auth.GoogleSignInApi.signOut(
+                    this._googleClient
+                );
+                signOut.setResultCallback(
+                    new com.google.android.gms.common.api.ResultCallback({
+                        onResult: status => {
+                            if (status.isSuccess()) {
+                                this.logMsg(
+                                    "[SUCCESS] logging out: ",
+                                    LOGTAG_LOGOUT
+                                );
+                                this._googleClient.disconnect();
+                                callback();
+                            } else {
+                                this.logMsg(
+                                    "[ERROR] logging out: " +
+                                        status.getStatusCode(),
+                                    LOGTAG_LOGOUT
+                                );
+                                callback();
+                            }
+                        }
+                    })
+                );
+            }
+            // Facebook Logout
+            this._fbLoginManager.logOut();
+        } catch (e) {
+            this.logMsg("[ERROR] Logging out: " + e, LOGTAG_LOGOUT);
+        }
     }
 }
