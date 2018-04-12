@@ -396,6 +396,7 @@ The following functions are implemented:
 | ---- | ---- |
 | loginWithFacebook | Facebook |
 | loginWithGoogle | Google |
+| logout | Google & Facebook |
 
 ## Example
 
@@ -408,6 +409,12 @@ SocialLogin.loginWithFacebook(
         console.log("displayName: " + result.displayName);
         console.log("photo: " + result.photo);
         console.log("authToken: " + result.authToken);
+    }
+);
+
+SocialLogin.logout(
+    () => {
+        console.log("Log out of Social accounts");
     }
 );
 ```
@@ -430,6 +437,14 @@ class SigninComponent {
                 console.log("displayName: " + result.displayName);
                 console.log("photo: " + result.photo);
                 console.log("authToken: " + result.authToken);
+            });
+        });
+    }
+
+    logout() {
+        SocialLogin.logout((result) => {
+            this.ngZone.run(() => {
+                console.log("Log out of Social accounts");
             });
         });
     }
