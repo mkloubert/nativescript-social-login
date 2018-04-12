@@ -1,94 +1,54 @@
-<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo">
+<Page 
+  xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo">
   <TabView id="mjk-tabview">
-   <TabView.items>
-     <TabViewItem title="Setup">
-       <TabViewItem.view>
+    <TabView.items>
+      <TabViewItem title="Setup">
+        <TabViewItem.view>
           <StackLayout className="mjk-setup">
             <Label text="Facebook" className="mjk-header mjk-header-first" />
             <StackLayout>
               <Label text="Your APP ID:" />
               <Label text="{{ facebookAppId }}" />
             </StackLayout>
-
             <Label text="Google" className="mjk-header" />
-            <TextField hint="Server client ID"
-                       text="{{ googleServerClientId }}" />
-            
-            <Button text="Initialize"
-                    tap="{{ initialize }}" />
-            
-            <Button text="Save settings"
-                    tap="{{ saveSettings }}" />
-            
-            <Label verticalAlignment="stretch"
-                   text="{{ initResultLog }}"
-                   textWrap="true" />
+            <TextField hint="Server client ID" text="{{ googleServerClientId }}" />
+            <Button text="Initialize" tap="{{ initialize }}" />
+            <Button text="Save settings" tap="{{ saveSettings }}" />
+            <Label verticalAlignment="stretch" text="{{ initResultLog }}" textWrap="true" />
           </StackLayout>
-       </TabViewItem.view>
-     </TabViewItem>
-
-     <TabViewItem title="Buttons">
-       <TabViewItem.view>
+        </TabViewItem.view>
+      </TabViewItem>
+      <TabViewItem title="Buttons">
+        <TabViewItem.view>
           <StackLayout className="mjk-buttons">
             <!-- Facebook login -->
-            <Image src="~/img/Vk9SO.png"
-                   visibility="{{ initResult &amp;&amp; initResult.facebook.isInitialized ? 'visible' : 'collapsed' }}"
-                   tap="{{ loginWithFacebook }}" />
-
+            <Image src="~/img/Vk9SO.png" visibility="{{ initResult &amp;&amp; initResult.facebook.isInitialized ? 'visible' : 'collapsed' }}" tap="{{ loginWithFacebook }}" />
             <!-- Google login -->
-            <Image src="~/img/XzoRm.png"
-                   visibility="{{ initResult &amp;&amp; initResult.google.isInitialized ? 'visible' : 'collapsed' }}"
-                   tap="{{ loginWithGoogle }}" />
-
-            <GridLayout rows="auto,*" columns="*"
-                        horizontalAlignment="stretch" verticalAlignment="stretch"
-                        visibility="{{ loginResult ? 'visible' : 'collapsed' }}">
-
-              <Image row="0" col="0"
-                     src="{{ loginResult.photo }}" />
-
-              <GridLayout rows="auto,auto,auto,auto,auto,auto,auto" columns="96,*"
-                          className="mjk-infoTable">
-
-                <Label row="0" col="0"
-                       text="Provider:" />
-                <Label row="0" col="1"
-                       text="{{ loginResult.provider }}" />
-
-                <Label row="1" col="0"
-                       text="Code:" />
-                <Label row="1" col="1"
-                       text="{{ loginResult.code }}" />
-
-                <Label row="2" col="0"
-                       text="Error:" />
-                <Label row="2" col="1"
-                       text="{{ loginResult.error }}" textWrap="true" />
-
-                <Label row="3" col="0"
-                       text="User token:" />
-                <Label row="3" col="1"
-                       text="{{ loginResult.userToken }}" />
-
-                <Label row="4" col="0"
-                       text="ID:" />
-                <Label row="4" col="1"
-                       text="{{ loginResult.id }}" />
-
-                <Label row="5" col="0"
-                       text="Display name:" />
-                <Label row="5" col="1"
-                       text="{{ loginResult.displayName }}" />
-
-                <Label row="6" col="0"
-                       text="Auth token:" />
-                <Label row="6" col="1"
-                       text="{{ loginResult.authToken }}" />
+            <Image src="~/img/XzoRm.png" visibility="{{ initResult &amp;&amp; initResult.google.isInitialized ? 'visible' : 'collapsed' }}" tap="{{ loginWithGoogle }}" />
+            <GridLayout rows="auto,*" columns="*" horizontalAlignment="stretch" verticalAlignment="stretch" visibility="{{ loginResult ? 'visible' : 'collapsed' }}">
+              <Image row="0" col="0" src="{{ loginResult.photo }}" />
+              <GridLayout rows="auto,auto,auto,auto,auto,auto,auto" columns="96,*" className="mjk-infoTable">
+                <Label row="0" col="0" text="Provider:" />
+                <Label row="0" col="1" text="{{ loginResult.provider }}" />
+                <Label row="1" col="0" text="Code:" />
+                <Label row="1" col="1" text="{{ loginResult.code }}" />
+                <Label row="2" col="0" text="Error:" />
+                <Label row="2" col="1" text="{{ loginResult.error }}" textWrap="true" />
+                <Label row="3" col="0" text="User token:" />
+                <Label row="3" col="1" text="{{ loginResult.userToken }}" />
+                <Label row="4" col="0" text="ID:" />
+                <Label row="4" col="1" text="{{ loginResult.id }}" />
+                <Label row="5" col="0" text="Display name:" />
+                <Label row="5" col="1" text="{{ loginResult.displayName }}" />
+                <Label row="6" col="0" text="Auth token:" />
+                <Label row="6" col="1" text="{{ loginResult.authToken }}" />
               </GridLayout>
             </GridLayout>
+            <!-- Account logout -->
+            <Button text="LOGOUT" visibility="{{ initResult ? 'visible' : 'collapsed' }}" tap="{{ logOut }}" />
           </StackLayout>
-       </TabViewItem.view>
-     </TabViewItem>
-   </TabView.items>
- </TabView>
+        </TabViewItem.view>
+      </TabViewItem>
+    </TabView.items>
+  </TabView>
 </Page>
