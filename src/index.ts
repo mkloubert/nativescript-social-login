@@ -22,7 +22,12 @@
 
 import { isNullOrUndefined } from "utils/types";
 import { SocialLogin } from "./SocialLogin";
-import { ILogger, ILoginConfiguration, IInitializationResult, ILoginResult } from "./SocialLogin-common";
+import {
+    ILogger,
+    ILoginConfiguration,
+    IInitializationResult,
+    ILoginResult
+} from "./SocialLogin-common";
 
 let Login: SocialLogin;
 const _loggers: ILogger[] = [];
@@ -56,8 +61,22 @@ export function init(config?: ILoginConfiguration): IInitializationResult {
  *
  * @throws Provider is (currently) NOT supported.
  */
-export function login(provider: string, callback: (result: ILoginResult) => void) {
+export function login(
+    provider: string,
+    callback: (result: ILoginResult) => void
+) {
     Login.loginWithProvider(provider.toLowerCase().trim(), callback);
+}
+
+/**
+ * Logs out from all providers.
+ *
+ * @param {Function} callback The callback on completion.
+ *
+ * @throws If an error occurs on the native side.
+ */
+export function logout(callback: () => void) {
+    Login.logOut(callback);
 }
 
 /**
@@ -88,4 +107,10 @@ export function loginWithTwitter(callback: (result: ILoginResult) => void) {
 }
 
 // Export neccessary Interfaces
-export { LoginResultType, ILogger, ILoginConfiguration, IInitializationResult, ILoginResult } from "./SocialLogin-common";
+export {
+    LoginResultType,
+    ILogger,
+    ILoginConfiguration,
+    IInitializationResult,
+    ILoginResult
+} from "./SocialLogin-common";
