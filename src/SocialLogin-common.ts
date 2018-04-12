@@ -204,6 +204,7 @@ import { merge } from "./utils";
 export const LOGTAG_INIT_ENV = "initEnvironment()";
 export const LOGTAG_LOGIN_WITH_FB = "loginWithFacebook()";
 export const LOGTAG_LOGIN_WITH_GOOGLE = "loginWithGoogle()";
+export const LOGTAG_LOGOUT = "logout()";
 
 export abstract class Social {
     protected Config: ILoginConfiguration;
