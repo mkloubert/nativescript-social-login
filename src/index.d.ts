@@ -21,6 +21,14 @@ export declare function init(config?: ILoginConfiguration): IInitializationResul
  */
 export declare function login(provider: string, callback: (result: ILoginResult) => void): void;
 /**
+ * Logs out from all providers.
+ *
+ * @param {Function} callback The callback on completion.
+ *
+ * @throws If an error occurs on the native side.
+ */
+export declare function logout(callback: () => void): void;
+/**
  * Logs in with Facebook auth API.
  *
  * @params {Function} callback The callback.

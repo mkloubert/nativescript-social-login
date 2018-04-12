@@ -161,6 +161,7 @@ export declare enum LoginResultType {
 export declare const LOGTAG_INIT_ENV = "initEnvironment()";
 export declare const LOGTAG_LOGIN_WITH_FB = "loginWithFacebook()";
 export declare const LOGTAG_LOGIN_WITH_GOOGLE = "loginWithGoogle()";
+export declare const LOGTAG_LOGOUT = "logout()";
 export declare abstract class Social {
     protected Config: ILoginConfiguration;
     protected _getLoggers: () => ILogger[];

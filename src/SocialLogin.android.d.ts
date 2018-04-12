@@ -1,5 +1,6 @@
 import { IInitializationResult, ILoginResult, Social } from "./SocialLogin-common";
 export declare class SocialLogin extends Social {
+    private _googleClient;
     private _rcGoogleSignIn;
     private _rcFacebookSignIn;
     private _fbCallbackManager;
@@ -11,4 +12,5 @@ export declare class SocialLogin extends Social {
     private initFacebook(result);
     private initTwitter(result);
     private initGoogle(result);
+    logOut(callback: () => void): void;
 }
