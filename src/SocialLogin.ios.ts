@@ -26,27 +26,25 @@ import {
     ILoginResult,
     LoginResultType,
     Social,
-    LOGTAG_LOGIN_WITH_GOOGLE
+    LOGTAG_LOGIN_WITH_GOOGLE,
+    LOGTAG_LOGOUT
 } from "./SocialLogin-common";
-
-declare const FBSDKGraphRequest,
-    FBSDKLoginManager,
-    GIDSignIn,
-    GIDSignInDelegate,
-    GIDSignInUIDelegate;
 
 const LOGTAG_FB_LOGIN_MGR = "facebookLoginManager";
 const LOGTAG_ON_GOOGLE_RESULT = "Google successCallback";
 
 export class SocialLogin extends Social {
-    private _facebookCallbackManager;
-    private facebookLoginManager;
+    private facebookLoginManager: FBSDKLoginManager;
+    private _facebookCallbackManager: (
+        p1: FBSDKLoginManagerLoginResult,
+        p2: NSError
+    ) => void;
 
+    private googleSignIn: GIDSignIn = null;
     private _googleProfileInfoCallback;
-    private googleFailCallback;
-    private googleSignIn = null;
-    private googleCancelCallback;
-    private googleSuccessCallback;
+    private googleFailCallback: (error: NSError) => void;
+    private googleCancelCallback: () => void;
+    private googleSuccessCallback: (result: ILoginResult) => void;
 
     public init(result: IInitializationResult): IInitializationResult {
         if (this.Config.facebook) {
@@ -66,7 +64,8 @@ export class SocialLogin extends Social {
         if (this.Config.google) {
             this.googleSignIn = GIDSignIn.sharedInstance();
             this.googleSignIn.shouldFetchBasicProfile = this.Config.google.shouldFetchBasicProfile;
-            this.googleSignIn.scopes = this.Config.google.scopes;
+            this.googleSignIn.scopes = NSArray.arrayWithArray(<any>this.Config
+                .google.scopes);
 
             // Setting 'googleSignIn.serverClientID' forces retrieval of an offline auth code in iOS.
             // Set it only if that's what the user is expecting to retrieve.
@@ -192,14 +191,13 @@ export class SocialLogin extends Social {
             };
 
             authToken = result.token.tokenString;
-            const fbRequest = FBSDKGraphRequest.alloc();
-            fbRequest
+            FBSDKGraphRequest.alloc()
                 .initWithGraphPathParametersTokenStringVersionHTTPMethod(
                     "me",
-                    {
-                        fields:
-                            "id,about,birthday,email,gender,name,first_name,last_name,picture"
-                    },
+                    NSDictionary.dictionaryWithObjectForKey(
+                        "id,about,birthday,email,gender,name,first_name,last_name,picture",
+                        "fields"
+                    ),
                     authToken,
                     null,
                     "GET"
@@ -230,9 +228,15 @@ export class SocialLogin extends Social {
             };
         }
 
-        const permissions = ["public_profile", "email"];
+        const permissions = NSArray.arrayWithArray(<any>[
+            "public_profile",
+            "email"
+        ]);
 
-        // this.facebookLoginManager.logInWithPublishPermissionsHandler(permissions, this._facebookCallbackManager);
+        // this.facebookLoginManager.logInWithPublishPermissionsHandler(
+        //     permissions,
+        //     this._facebookCallbackManager
+        // );
         this.facebookLoginManager.logInWithReadPermissionsHandler(
             permissions,
             this._facebookCallbackManager
@@ -375,4 +379,17 @@ export class SocialLogin extends Social {
     public loginWithTwitter(
         callback: (result: Partial<ILoginResult>) => void
     ) {}
+
+    logOut(callback: () => void) {
+        this.logMsg("Starting Logout", LOGTAG_LOGOUT);
+        try {
+            this.googleSignIn.signOut();
+            this.facebookLoginManager.logOut();
+            callback();
+            this.logMsg("[SUCCESS] logging out: ", LOGTAG_LOGOUT);
+        } catch (e) {
+            callback();
+            this.logMsg("[ERROR] Logging out: " + e, LOGTAG_LOGOUT);
+        }
+    }
 }
