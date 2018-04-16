@@ -87,7 +87,7 @@ inside your app project to install the module.
 
 ##### AndroidManifest.xml
 
-Add the `xmlns:tools="http://schemas.android.com/tools"` namespace to your `<manifest>` tag, and add the Facebook configuration in the `<application>` section of the manifest as shown bellow:
+Add the `xmlns:tools="http://schemas.android.com/tools"` namespace to your `<manifest>` tag, and then add the Facebook configuration in the `<application>` section of the manifest as shown bellow:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -96,12 +96,12 @@ Add the `xmlns:tools="http://schemas.android.com/tools"` namespace to your `<man
     <application>
         <!-- ... -->
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
-        
-        <activity 
+
+        <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-			tools:replace="android:theme"
-			android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            tools:replace="android:theme"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:label="@string/app_name" />
 
         <activity
