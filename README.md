@@ -1,6 +1,9 @@
-[![npm](https://img.shields.io/npm/v/nativescript-social-login.svg)](https://www.npmjs.com/package/nativescript-social-login)
-[![npm](https://img.shields.io/npm/dt/nativescript-social-login.svg?label=npm%20downloads)](https://www.npmjs.com/package/nativescript-social-login)
+[![NPM version][npm-image]][npm-url]
+[![NPM downloads][npm-downloads-image]][npm-url]
 
+[npm-url]: https://npmjs.org/package/nativescript-social-login
+[npm-image]: http://img.shields.io/npm/v/nativescript-social-login.svg
+[npm-downloads-image]: https://img.shields.io/npm/dt/nativescript-social-login.svg?label=npm%20downloads
 # NativeScript Social Login
 
 [NativeScript](https://www.nativescript.org/) module for social (token based) log-ins.
@@ -80,6 +83,39 @@ inside your app project to install the module.
     <string name="facebook_app_id">{{ YOUR_FACEBOOK_APP_ID }}</string>
     <string name="fb_login_protocol_scheme">fb{{ YOUR_FACEBOOK_APP_ID }}</string>
 </resources>
+```
+
+##### AndroidManifest.xml
+
+Add the `xmlns:tools="http://schemas.android.com/tools"` namespace to your `<manifest>` tag, and add the Facebook configuration in the `<application>` section of the manifest as shown bellow:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <!-- ... -->
+    <application>
+        <!-- ... -->
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        
+        <activity 
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+			tools:replace="android:theme"
+			android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:label="@string/app_name" />
+
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
 ```
 
 ### Setup Android Google Sign in for Debug Builds
