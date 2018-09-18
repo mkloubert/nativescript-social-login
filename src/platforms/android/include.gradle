@@ -1,10 +1,6 @@
 
 android {
-  productFlavors {
-    "nativescript-social-login" {
-      dimension "nativescript-social-login"
-    }
-  }
+  
 }
 
 buildscript {
@@ -25,20 +21,16 @@ repositories {
 
 dependencies {
     def googlePlayServicesVersion = project.hasProperty('googlePlayServicesVersion') ? project.googlePlayServicesVersion : '10.2.6'
-    compile "com.google.android.gms:play-services-auth:$googlePlayServicesVersion"
+    implementation "com.google.android.gms:play-services-auth:$googlePlayServicesVersion"
 
     def facebookSDKVersion = project.hasProperty('facebookSDKVersion') ? project.facebookSDKVersion : '[4, 5)'
     // https://github.com/mkloubert/nativescript-social-login/issues/32#issue-285587592
-    compile ("com.facebook.android:facebook-login:$facebookSDKVersion"){
+    implementation ("com.facebook.android:facebook-login:[4,5)"){
         exclude group: 'com.google.zxing'
     }
 
-    // compile('com.twitter.sdk.android:twitter:1.13.2@aar') {
-    //     transitive = true
-    // }
-
     // https://stackoverflow.com/a/43272992/8236404
-    def supportVersion = project.hasProperty('supportVersion') ? project.supportVersion : '26.1.0'
+    def supportVersion = '26.1.0'
     configurations.all {
         resolutionStrategy.eachDependency { DependencyResolveDetails details ->
             def requested = details.requested
