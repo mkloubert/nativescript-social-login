@@ -271,7 +271,7 @@ if (application.ios) {
 Include the module in your code-behind:
 
 ```typescript
-import SocialLogin = require("nativescript-social-login");
+import * as SocialLogin from 'nativescript-social-login';
 ```
 
 ### Initialize
