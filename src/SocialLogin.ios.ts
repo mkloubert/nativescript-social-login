@@ -266,7 +266,7 @@ export class SocialLogin extends Social {
                             photo: user.profile.imageURLWithDimension(100),
                             authCode: user.serverAuthCode
                                 ? user.serverAuthCode
-                                : user.authentication.idToken,
+                                : user.authentication.accessToken,
                             id: user.userID
                         }; // Safe to send to the server // For client-side use only!
 
